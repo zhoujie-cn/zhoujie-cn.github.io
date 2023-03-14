@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="java 线程池 线程," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="在java中，如果我们要使用一个线程， 那么我们可以这样创建一个线程 1234567Thread thread&#x3D; new Thread() &amp;#123;		  @Override		  public void run() &amp;#123;		         l.add(random.nextInt());	  		  &amp;#125;	  &amp;#125;;	   thread.start();  然而">
+<meta property="og:type" content="article">
+<meta property="og:title" content="java线程池(ThreadPoolExecutor)实例讲解">
+<meta property="og:url" content="http://example.com/2016/07/20/java%E7%BA%BF%E7%A8%8B%E6%B1%A0(ThreadPoolExecutor)%E5%AE%9E%E4%BE%8B%E8%AE%B2%E8%A7%A3/index.html">
+<meta property="og:site_name" content="周杰">
+<meta property="og:description" content="在java中，如果我们要使用一个线程， 那么我们可以这样创建一个线程 1234567Thread thread&#x3D; new Thread() &amp;#123;		  @Override		  public void run() &amp;#123;		         l.add(random.nextInt());	  		  &amp;#125;	  &amp;#125;;	   thread.start();  然而">
+<meta property="og:locale">
+<meta property="article:published_time" content="2016-07-20T10:35:55.000Z">
+<meta property="article:modified_time" content="2023-03-14T06:46:35.705Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="java 线程池 线程">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://example.com/2016/07/20/java线程池(ThreadPoolExecutor)实例讲解/"/>
+
+
+
+
+
+  <title>java线程池(ThreadPoolExecutor)实例讲解 | 周杰</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">周杰</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2016/07/20/java%E7%BA%BF%E7%A8%8B%E6%B1%A0(ThreadPoolExecutor)%E5%AE%9E%E4%BE%8B%E8%AE%B2%E8%A7%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="周杰">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">java线程池(ThreadPoolExecutor)实例讲解</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-07-20T18:35:55+08:00">
+                2016-07-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <span id="more"></span>
+
+<p>在java中，如果我们要使用一个线程， 那么我们可以这样创建一个线程</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Thread thread= <span class="keyword">new</span> <span class="title class_">Thread</span>() &#123;</span><br><span class="line">		  <span class="meta">@Override</span></span><br><span class="line">		  <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span> &#123;</span><br><span class="line">		         l.add(random.nextInt());	  </span><br><span class="line">		  &#125;</span><br><span class="line">	  &#125;;</span><br><span class="line">	   thread.start();</span><br></pre></td></tr></table></figure>
+
+<p>然而这样做的坏处是， 每次都需要重新创建一个线程， 而非重复利用。 频繁的创建线程和销毁线程往往时间甚至要高于线程执行任务的时间。 那么有没有办法让这些线程可重复性的利用呢？   我的意思是， 让这些线程在执行完之后不销毁， 放在某一个地方。  达到可复用的目的呢？  答案是有的。 java中的 java.util.concurrent包中提供了线程池，来达到线程可复用的目的。  当然。 concurrent包中不止线程池 其中还包括了ConcurrentHashMap   BlockingQueue 等一系列线程安全的并发容器。</p>
+<p>而java.util.concurrent.ThreadPoolExecutor 就是一个线程池。  他是一个Class、 签名如下：</p>
+<p> </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ThreadPoolExecutor</span> <span class="keyword">extends</span> <span class="title class_">AbstractExecutorService</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">ThreadPoolExecutor</span><span class="params">(<span class="type">int</span> corePoolSize,<span class="type">int</span> maximumPoolSize,<span class="type">long</span> keepAliveTime,TimeUnit unit,  BlockingQueue&lt;Runnable&gt; workQueue)</span>;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">ThreadPoolExecutor</span><span class="params">(<span class="type">int</span> corePoolSize,<span class="type">int</span> maximumPoolSize,<span class="type">long</span> keepAliveTime,TimeUnit unit,</span></span><br><span class="line"><span class="params">            BlockingQueue&lt;Runnable&gt; workQueue,ThreadFactory threadFactory)</span>;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">ThreadPoolExecutor</span><span class="params">(<span class="type">int</span> corePoolSize,<span class="type">int</span> maximumPoolSize,<span class="type">long</span> keepAliveTime,TimeUnit unit,</span></span><br><span class="line"><span class="params">            BlockingQueue&lt;Runnable&gt; workQueue,RejectedExecutionHandler handler)</span>;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">ThreadPoolExecutor</span><span class="params">(<span class="type">int</span> corePoolSize,<span class="type">int</span> maximumPoolSize,<span class="type">long</span> keepAliveTime,TimeUnit unit,</span></span><br><span class="line"><span class="params">        BlockingQueue&lt;Runnable&gt; workQueue,ThreadFactory threadFactory,RejectedExecutionHandler handler)</span>;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>共有四个构造方法：</p>
+<p>              corePoolSize：核心池的大小，默认情况下，在创建了线程池后，线程池中的线程数为0，当有任务来之后，就会创建一个线程去执行任务，当线程池中的线程数目达到corePoolSize后，就会把到达的任务放到缓存队列当中。</p>
+<p>  maximumPoolSize：线程池最大线程数， 表示在这个池中最多能够创建多少个线程。</p>
+<p>keepAliveTime：    表示线程没有任务执行时最多保持多久时间会终止。 注意  默认情况下，只有当线程池中的线程数大于corePoolSize时，keepAliveTime才会起作用，直到线程池中的线程数不大于corePoolSize，即当线程池中的线程数大于corePoolSize时，如果一个线程空闲的时间达到keepAliveTime，则会终止，直到线程池中的线程数不超过corePoolSize。但是如果调用了allowCoreThreadTimeOut(boolean)方法，在线程池中的线程数不大于corePoolSize时，keepAliveTime参数也会起作用，直到线程池中的线程数为0；  </p>
+<p>unit：参数keepAliveTime的时间单位，有7种取值。 具体查看文档。  </p>
+<p> </p>
+<p>workQueue： 存储等待执行任务的线程， 提供一个队列进行管理任务线程。 基本的任务队列有几种比如：无界队列    有界队列.</p>
+<p>这里需要注意的是：在创建ThreadPoolExecutor初期，线程并不会立即启动。而是等到有任务提交时才启动。 除非你显示调用perstartAllCoreThreads方法。  </p>
+<p>下面我在我的电脑上写了一个不算严格的测试。 来计算使用线程池和不使用线程池的时间消耗。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.LinkedList;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.Random;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.LinkedBlockingQueue;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.ThreadPoolExecutor;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.TimeUnit;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ThreadPool</span> &#123;</span><br><span class="line">	</span><br><span class="line">	 <span class="keyword">private</span> <span class="keyword">static</span> <span class="type">int</span> count=<span class="number">2000</span>;</span><br><span class="line">	 <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">yes_threadpool</span><span class="params">()</span> &#123;</span><br><span class="line">		 </span><br><span class="line">    <span class="type">long</span> <span class="variable">startTime</span> <span class="operator">=</span> System.currentTimeMillis();</span><br><span class="line">     <span class="keyword">final</span> List&lt;Integer&gt; l= <span class="keyword">new</span> <span class="title class_">LinkedList</span>&lt;Integer&gt;();</span><br><span class="line">     ThreadPoolExecutor tP= <span class="keyword">new</span> <span class="title class_">ThreadPoolExecutor</span>(<span class="number">1</span>,<span class="number">60</span>,<span class="number">1</span>,TimeUnit.SECONDS,</span><br><span class="line">    		 <span class="keyword">new</span>  <span class="title class_">LinkedBlockingQueue</span>&lt;Runnable&gt;(count));</span><br><span class="line">         <span class="keyword">final</span> Random random= <span class="keyword">new</span> <span class="title class_">Random</span>();</span><br><span class="line">         <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt;count; i++) &#123;</span><br><span class="line">			 tP.execute(<span class="keyword">new</span> <span class="title class_">Runnable</span>() &#123;</span><br><span class="line">				</span><br><span class="line">				<span class="meta">@Override</span></span><br><span class="line">				<span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span> &#123;</span><br><span class="line">					<span class="comment">// TODO Auto-generated method stub</span></span><br><span class="line">					 l.add(random.nextInt());</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;);</span><br><span class="line">		&#125;</span><br><span class="line">         tP.shutdown();</span><br><span class="line">         </span><br><span class="line">         <span class="keyword">try</span> &#123;</span><br><span class="line">			tP.awaitTermination(<span class="number">1</span>,TimeUnit.DAYS);</span><br><span class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">			<span class="comment">// <span class="doctag">TODO:</span> handle exception</span></span><br><span class="line">			 System.out.println(<span class="string">&quot;线程池异常&quot;</span>);</span><br><span class="line">			 e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">   </span><br><span class="line">          System.out.println(System.currentTimeMillis()-startTime);</span><br><span class="line">          System.out.println(l.size());</span><br><span class="line">         </span><br><span class="line">    &#125;</span><br><span class="line">	 </span><br><span class="line">	 </span><br><span class="line">	 <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">no_threadpool</span><span class="params">()</span> &#123;</span><br><span class="line">		 <span class="type">long</span> <span class="variable">startTime</span> <span class="operator">=</span> System.currentTimeMillis();</span><br><span class="line">		 <span class="keyword">final</span> List&lt;Integer&gt; l = <span class="keyword">new</span> <span class="title class_">LinkedList</span>&lt;Integer&gt;();</span><br><span class="line">		  <span class="keyword">final</span> Random random= <span class="keyword">new</span> <span class="title class_">Random</span>();</span><br><span class="line">		 <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>; i&lt;count; i++) &#123;</span><br><span class="line">			  Thread thread= <span class="keyword">new</span> <span class="title class_">Thread</span>() &#123;</span><br><span class="line">				  <span class="meta">@Override</span></span><br><span class="line">				  <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span> &#123;</span><br><span class="line">				         l.add(random.nextInt());	  </span><br><span class="line">				  &#125;</span><br><span class="line">			  &#125;;</span><br><span class="line">			   thread.start();</span><br><span class="line">			   </span><br><span class="line">			 <span class="keyword">try</span> &#123;</span><br><span class="line">				thread.join();</span><br><span class="line">			&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">				<span class="comment">// <span class="doctag">TODO:</span> handle exception</span></span><br><span class="line">			   System.out.println(<span class="string">&quot;非线程池异常&quot;</span>);</span><br><span class="line">			   e.printStackTrace();</span><br><span class="line">			&#125;  </span><br><span class="line">		 &#125;</span><br><span class="line">		  System.out.println(System.currentTimeMillis()-startTime);</span><br><span class="line">		  System.out.println(l.size());</span><br><span class="line">	 &#125;</span><br><span class="line">	 </span><br><span class="line">	 <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">		 <span class="type">ThreadPool</span> <span class="variable">threadPool</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ThreadPool</span>();</span><br><span class="line">		 </span><br><span class="line">		<span class="comment">// threadPool.yes_threadpool(); 21</span></span><br><span class="line">		 </span><br><span class="line">		<span class="comment">//threadPool.no_threadpool(); 1049</span></span><br><span class="line">		 </span><br><span class="line">		 <span class="comment">/*</span></span><br><span class="line"><span class="comment">		  *  测试结果为 使用线程池 21  不使用线程池 1049</span></span><br><span class="line"><span class="comment">		  *</span></span><br><span class="line"><span class="comment">		  */</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>大家可以分别测试使用线程池和没使用线程池的时间差别。  在我的电脑上 使用线程池只用了21毫秒。  不使用线程池用了1049毫秒。 我的jdk版本是1.8  </p>
+<p>当然这只是并发包中提供的一种线程池。 另外还有其中有几种。 如newCachedThreadPool       newFixedThreadPool  等。 他们都是由Executors提供。</p>
+<p>其中： newCachedThreadPool创建一个可缓存线程池，如果线程池长度超过处理需要，可灵活回收空闲线程，若无可回收，则新建线程。 而 new FixedThreadPool 创建一个定长线程池，它可控制线程最大并发数（可以控制最大并发数， 比如说csdn对于下载资源就有并发控制），超出的线程会在队列中等待。.</p>
+<p>最近刚好有点空闲时间就做个总结。  关于java.util.concurrent并发包， 只能说。 很强大。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java-%E7%BA%BF%E7%A8%8B%E6%B1%A0-%E7%BA%BF%E7%A8%8B/" rel="tag"># java 线程池 线程</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/07/02/SpringMvc%E5%AE%9E%E7%8E%B0%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/" rel="next" title="SpringMvc实现文件上传">
+                <i class="fa fa-chevron-left"></i> SpringMvc实现文件上传
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/08/01/JAVA%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%20(JMM)%E5%92%8C%E5%90%8C%E6%AD%A5%E4%BB%A5%E5%8F%8A%E5%8F%AF%E8%A7%81%E6%80%A7/" rel="prev" title="JAVA内存模型 (JMM)和同步以及可见性">
+                JAVA内存模型 (JMM)和同步以及可见性 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2017 &mdash; <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="java spring mvc spring," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="最近闲暇之余，感觉很久没有写博客了， 以前都是写一些算法， 今天打算写一下SpringMvc.   总的来说Mvc也算是一种设计模式，  不仅仅是Java, 前端js, 数据库。 也可以采用这种模式来达到一个业务逻辑和页面显示通过控制器达到解耦的目的。 SpringMvc可以跟SpringIOC无缝对接， 比起struts2也有好的几点如下：     第一：struts2 性能较低， 基本上在">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringMvc初入门（带完整入门项目）">
+<meta property="og:url" content="http://example.com/2016/06/29/SpringMvc%E5%88%9D%E5%85%A5%E9%97%A8%EF%BC%88%E5%B8%A6%E5%AE%8C%E6%95%B4%E5%85%A5%E9%97%A8%E9%A1%B9%E7%9B%AE%EF%BC%89/index.html">
+<meta property="og:site_name" content="周杰">
+<meta property="og:description" content="最近闲暇之余，感觉很久没有写博客了， 以前都是写一些算法， 今天打算写一下SpringMvc.   总的来说Mvc也算是一种设计模式，  不仅仅是Java, 前端js, 数据库。 也可以采用这种模式来达到一个业务逻辑和页面显示通过控制器达到解耦的目的。 SpringMvc可以跟SpringIOC无缝对接， 比起struts2也有好的几点如下：     第一：struts2 性能较低， 基本上在">
+<meta property="og:locale">
+<meta property="og:image" content="https://img-blog.csdn.net/20160629220239979?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:image" content="https://img-blog.csdn.net/20160629223342632?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="article:published_time" content="2016-06-29T14:39:05.000Z">
+<meta property="article:modified_time" content="2023-03-14T06:46:35.703Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="java spring mvc spring">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdn.net/20160629220239979?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://example.com/2016/06/29/SpringMvc初入门（带完整入门项目）/"/>
+
+
+
+
+
+  <title>SpringMvc初入门（带完整入门项目） | 周杰</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">周杰</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2016/06/29/SpringMvc%E5%88%9D%E5%85%A5%E9%97%A8%EF%BC%88%E5%B8%A6%E5%AE%8C%E6%95%B4%E5%85%A5%E9%97%A8%E9%A1%B9%E7%9B%AE%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="周杰">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">SpringMvc初入门（带完整入门项目）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-06-29T22:39:05+08:00">
+                2016-06-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring/" itemprop="url" rel="index">
+                    <span itemprop="name">Spring</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <span id="more"></span>
+
+<p>最近闲暇之余，感觉很久没有写博客了， 以前都是写一些算法， 今天打算写一下SpringMvc.   总的来说Mvc也算是一种设计模式，  不仅仅是Java, 前端js, 数据库。 也可以采用这种模式来达到一个业务逻辑和页面显示通过控制器达到解耦的目的。 SpringMvc可以跟SpringIOC无缝对接， 比起struts2也有好的几点如下：</p>
+<p>    第一：struts2 性能较低， 基本上在我的机子上跑速度比较慢， 主要我想是他自带的标签库，UI库。 在前端如此丰富的今天完全没有必要用struts2自带的标签库了。</p>
+<p>   第二： SpringMvc是基于方法级切入的，struts是基于类切入的。相对于而言，Spring粒度更细。</p>
+<p>   第三：struts2的入口是filter, 而Springmvc是servlet.</p>
+<p>   第四：Spring所提供SpringSecurity这个权限框架也很不错。 当然我并没有在struts2上做过多个深入， 估计也有这种框架。</p>
+<p>首先我假定你已经对Spring这个框架有一定的了解，但是没有也没关系。</p>
+<p>首先我们介绍的是SpringMvc的核心。 DispatcherServlet, 这个Servlet充当SpringMvc的前端控制器主要用作职责调度工作 ，也就是一个流程的控制。他得在web.xml中进行配置。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">servlet</span>&gt;</span>  </span><br><span class="line">        <span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>xxx<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span>  </span><br><span class="line">        <span class="tag">&lt;<span class="name">servlet-class</span>&gt;</span>org.springframework.web.servlet.DispatcherServlet<span class="tag">&lt;/<span class="name">servlet-class</span>&gt;</span> </span><br><span class="line"><span class="tag">&lt;<span class="name">load-on-startup</span>&gt;</span>1<span class="tag">&lt;<span class="name">load-on-startup</span>&gt;</span> </span><br><span class="line"><span class="tag">&lt;<span class="name">servlet</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>其中servlet-name 这个属性蛮重要，在默认的情况下，DispatcherServlet会加载从一个基于这个Servlet名字的xml文件中</p>
+<p>加载Spring应用的上下文。  比如上面的例子， DispatcherServlet会加载xxx-servlet这个文件，这个xml文件一般是写在你的</p>
+<p>Tomcat的WEB-INF目录下面。  </p>
+<p>接着我们必须声明DispatcherServlet要处理的URL(*,htm &#x2F;* &#x2F;app)等等， 这个也是写在你的web,xml中的， 如：</p>
+<p> </p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">servlet-mapping</span>&gt;</span>  </span><br><span class="line">       <span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>zd_web<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span>  </span><br><span class="line">       <span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>/<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span>  </span><br><span class="line">   <span class="tag">&lt;/<span class="name">servlet-mapping</span>&gt;</span>  </span><br></pre></td></tr></table></figure>
+
+<p> url-pattern 就是你要处理的URL， 我这里加上 “&#x2F;“ 意思是处理所有的URL。 （你也可以在Spring中配置&lt;mvc:resources&gt;这个元素）</p>
+<p>接着我们可以指定DispatcherServlet将请求发送给哪个控制器。   所有的请求都要通过DispatcherServlet，然后再由它进行分发， 一般我们将请求发送到HanderMapping上面，那什么是HanderMapping呢，HanderMapping的就是为每个请求找到合适的处理器handler. 那什么是handler呢， 通俗点讲就是标注了@RequestMapping的方法。</p>
+<p> 那么我们怎么确定控制器呢， 在通俗点讲就是在类上面标注@Controller注解进行装饰的class。  这个我在网络上找了一张图：</p>
+<p><img src="https://img-blog.csdn.net/20160629220239979?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center"></p>
+<p>首先，当前端的请求到达的时候， 我们根据我们所编写的请求类进行处理， 这个类必须打上@controller这个注解，以表示它是一个控制器类， 接着我们可以在这个类的方法</p>
+<p>里面打上@RequestMapping对请求进行装饰。</p>
+<p>   好的，首先我们先不管那么多概念， 心中得有一个流程的模型， 俗话说，代码能跑起来在想优化的事情。   那么知道这几个概念后，我们可以开始跑一跑这个小项目了，</p>
+<p>首先定义一个表单类， 他用javaScript进行GET方式的提交：</p>
+<p>             我们把这个jsp页面的名字叫做logins.jsp  </p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ page language=&quot;java&quot; contentType=&quot;text/html; charset=UTF-8&quot;  </span><br><span class="line">    pageEncoding=&quot;UTF-8&quot;%&gt;  </span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">html</span> <span class="keyword">PUBLIC</span> <span class="string">&quot;-//W3C//DTD HTML 4.01 Transitional//EN&quot;</span> <span class="string">&quot;http://www.w3.org/TR/html4/loose.dtd&quot;</span>&gt;</span>  </span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span>  </span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span>  </span><br><span class="line"><span class="tag">&lt;<span class="name">meta</span> <span class="attr">http-equiv</span>=<span class="string">&quot;Content-Type&quot;</span> <span class="attr">content</span>=<span class="string">&quot;text/html; charset=UTF-8&quot;</span>&gt;</span>  </span><br><span class="line"><span class="tag">&lt;<span class="name">title</span>&gt;</span>Add User<span class="tag">&lt;/<span class="name">title</span>&gt;</span>  </span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">&quot;text/javascript&quot;</span>&gt;</span><span class="language-javascript">  </span></span><br><span class="line"><span class="language-javascript">    <span class="comment">//添加用户  </span></span></span><br><span class="line"><span class="language-javascript">    <span class="keyword">function</span> <span class="title function_">addUser</span>(<span class="params"></span>) &#123;  </span></span><br><span class="line"><span class="language-javascript">        <span class="keyword">var</span> form = <span class="variable language_">document</span>.<span class="property">forms</span>[<span class="number">0</span>];  </span></span><br><span class="line"><span class="language-javascript">        form.<span class="property">action</span> = <span class="string">&quot;$&#123;pageContext.request.contextPath&#125;/logins&quot;</span>;  </span></span><br><span class="line"><span class="language-javascript">        </span></span><br><span class="line"><span class="language-javascript">        form.<span class="property">method</span> = <span class="string">&quot;get&quot;</span>;  </span></span><br><span class="line"><span class="language-javascript">        form.<span class="title function_">submit</span>();  </span></span><br><span class="line"><span class="language-javascript">    &#125;  </span></span><br><span class="line"><span class="language-javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span>  </span><br><span class="line">  </span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span>  </span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">form</span>&gt;</span>  </span><br><span class="line">        <span class="tag">&lt;<span class="name">table</span>&gt;</span>  </span><br><span class="line">            <span class="tag">&lt;<span class="name">tr</span>&gt;</span>  </span><br><span class="line">                <span class="tag">&lt;<span class="name">td</span>&gt;</span>账号<span class="tag">&lt;/<span class="name">td</span>&gt;</span>  </span><br><span class="line">                <span class="tag">&lt;<span class="name">td</span>&gt;</span>  </span><br><span class="line">                    <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">name</span>=<span class="string">&quot;userName&quot;</span>&gt;</span>  </span><br><span class="line">                <span class="tag">&lt;/<span class="name">td</span>&gt;</span>  </span><br><span class="line">            <span class="tag">&lt;/<span class="name">tr</span>&gt;</span>  </span><br><span class="line">            <span class="tag">&lt;<span class="name">tr</span>&gt;</span>  </span><br><span class="line">                <span class="tag">&lt;<span class="name">td</span>&gt;</span>密码<span class="tag">&lt;/<span class="name">td</span>&gt;</span>  </span><br><span class="line">                <span class="tag">&lt;<span class="name">td</span>&gt;</span>  </span><br><span class="line">                    <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;password&quot;</span> <span class="attr">name</span>=<span class="string">&quot;password&quot;</span>&gt;</span>  </span><br><span class="line">                <span class="tag">&lt;/<span class="name">td</span>&gt;</span>  </span><br><span class="line">            <span class="tag">&lt;/<span class="name">tr</span>&gt;</span>  </span><br><span class="line">            <span class="tag">&lt;<span class="name">tr</span>&gt;</span>  </span><br><span class="line">                <span class="tag">&lt;<span class="name">td</span>&gt;</span> <span class="tag">&lt;/<span class="name">td</span>&gt;</span>  </span><br><span class="line">                <span class="tag">&lt;<span class="name">td</span>&gt;</span>  </span><br><span class="line">                    <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">value</span>=<span class="string">&quot;提交&quot;</span> <span class="attr">οnclick</span>=<span class="string">&quot;addUser()&quot;</span>&gt;</span>  </span><br><span class="line">                <span class="tag">&lt;/<span class="name">td</span>&gt;</span>  </span><br><span class="line">            <span class="tag">&lt;/<span class="name">tr</span>&gt;</span>  </span><br><span class="line">        <span class="tag">&lt;/<span class="name">table</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;/<span class="name">form</span>&gt;</span>  </span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span>  </span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>接着我们在写控制器 定义一个包名字为login， 因为我上面通过JS的from.submit()提交了表单。 这个控制器类的名字叫LoginContller</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">package login;</span><br><span class="line"></span><br><span class="line">import org.springframework.stereotype.Controller;</span><br><span class="line">import org.springframework.web.bind.annotation.RequestMapping;</span><br><span class="line">import org.springframework.web.bind.annotation.RequestMethod;</span><br><span class="line"></span><br><span class="line">@Controller</span><br><span class="line">public class LoginController &#123;</span><br><span class="line"></span><br><span class="line">	</span><br><span class="line">	@RequestMapping(path=&quot;/logins&quot;,method=RequestMethod.GET)</span><br><span class="line">	public String login(LoginBean loginBean) &#123;</span><br><span class="line">		 System.out.println(loginBean.getuserName());</span><br><span class="line">		 System.out.println(loginBean.getPassword());</span><br><span class="line">		 </span><br><span class="line">		 return &quot;logins&quot;;</span><br><span class="line">	&#125;</span><br><span class="line">	 </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中path 是URI名称， 也就是你输入地址 <a target="_blank" rel="noopener" href="http://locathost:"加上你的项目名"/logins/">http://locathost:&quot;加上你的项目名&quot;/logins/</a></p>
+<p>接着我们在写一个Bean，接受请求的参数，UserName和PassWrod，他的名字是loginBean</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> login;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.validation.constraints.Size;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.hibernate.validator.constraints.Length;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">LoginBean</span> &#123;</span><br><span class="line"></span><br><span class="line">	</span><br><span class="line">	  <span class="keyword">private</span>  String userName;</span><br><span class="line">	  </span><br><span class="line">	  <span class="keyword">private</span>  String Password;</span><br><span class="line">	  </span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> String <span class="title function_">getuserName</span><span class="params">()</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> userName;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setuserName</span><span class="params">(<span class="meta">@Size(min=4,max=15,message=&quot;账号要满足4-15个字符&quot;)</span>String userName)</span> &#123;</span><br><span class="line">		<span class="built_in">this</span>.userName = userName;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> String <span class="title function_">getPassword</span><span class="params">()</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> Password;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setPassword</span><span class="params">(<span class="meta">@Length(min=6,max=15,message=&quot;密码要满足6-15个字符&quot;)</span>String password)</span> &#123;</span><br><span class="line">		Password = password;</span><br><span class="line">	&#125;</span><br><span class="line">	  </span><br><span class="line">	  </span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中Size和Length是JSR的数据效验，这个大家可以忽略或者去掉。</p>
+<p>接着web.xml  </p>
+<p> </p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span>?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">web-app</span> <span class="attr">xmlns:xsi</span>=<span class="string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span> <span class="attr">xmlns</span>=<span class="string">&quot;http://java.sun.com/xml/ns/javaee&quot;</span> <span class="attr">xsi:schemaLocation</span>=<span class="string">&quot;http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd&quot;</span> <span class="attr">id</span>=<span class="string">&quot;WebApp_ID&quot;</span> <span class="attr">version</span>=<span class="string">&quot;2.5&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">display-name</span>&gt;</span>zd_web<span class="tag">&lt;/<span class="name">display-name</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">welcome-file-list</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">welcome-file</span>&gt;</span>login.jsp<span class="tag">&lt;/<span class="name">welcome-file</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">welcome-file</span>&gt;</span>login.jsp<span class="tag">&lt;/<span class="name">welcome-file</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">welcome-file</span>&gt;</span>login.jsp<span class="tag">&lt;/<span class="name">welcome-file</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">welcome-file</span>&gt;</span>login.jsp<span class="tag">&lt;/<span class="name">welcome-file</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">welcome-file</span>&gt;</span>login.jsp<span class="tag">&lt;/<span class="name">welcome-file</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">welcome-file</span>&gt;</span>login.jsp<span class="tag">&lt;/<span class="name">welcome-file</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">welcome-file-list</span>&gt;</span></span><br><span class="line">  </span><br><span class="line">   <span class="comment">&lt;!--  </span></span><br><span class="line"><span class="comment">    	&lt;listener&gt;  </span></span><br><span class="line"><span class="comment">            &lt;listener-class&gt;org.springframework.web.context.ContextLoaderListener&lt;/listener-class&gt;  </span></span><br><span class="line"><span class="comment">        &lt;/listener&gt;  </span></span><br><span class="line"><span class="comment">  --&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">servlet</span>&gt;</span>  </span><br><span class="line">        <span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>zd_web<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span>  </span><br><span class="line">        <span class="tag">&lt;<span class="name">servlet-class</span>&gt;</span>org.springframework.web.servlet.DispatcherServlet<span class="tag">&lt;/<span class="name">servlet-class</span>&gt;</span>  </span><br><span class="line">        </span><br><span class="line">     <span class="tag">&lt;<span class="name">init-param</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">param-name</span>&gt;</span>contextConfigLocation<span class="tag">&lt;/<span class="name">param-name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">param-value</span>&gt;</span>WEB-INF/zd_web-servlet.xml<span class="tag">&lt;/<span class="name">param-value</span>&gt;</span> </span><br><span class="line">      <span class="tag">&lt;/<span class="name">init-param</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">load-on-startup</span>&gt;</span>1<span class="tag">&lt;/<span class="name">load-on-startup</span>&gt;</span> </span><br><span class="line">        </span><br><span class="line">        </span><br><span class="line">    <span class="tag">&lt;/<span class="name">servlet</span>&gt;</span> </span><br><span class="line">	</span><br><span class="line">    </span><br><span class="line">    <span class="tag">&lt;<span class="name">servlet-mapping</span>&gt;</span>  </span><br><span class="line">        <span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>zd_web<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span>  </span><br><span class="line">        <span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>/<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;/<span class="name">servlet-mapping</span>&gt;</span>  </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">web-app</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>其中zd_web是我在写的一个Erp名字叫zd_web 这个大家可以换做你自己的项目名。或者也写成这样。(需要注释掉listener如果知道IOC的应该想得到，没学的可以直接注释)</p>
+<p> 接着是Spring的配置文件， 名字为：zd_web-servlet（同上zd_web名字可以改成你的项目名）:</p>
+<p> </p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">context:component-scan base-package=&quot;login&quot;/&gt;</span><br><span class="line"><span class="comment">&lt;!-- &lt;context:component-scan base-package=&quot;login_Verify_picture&quot;/&gt; --&gt;</span></span><br><span class="line"> </span><br><span class="line">    <span class="comment">&lt;!-- 启用spring mvc 注解 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">context:annotation-config</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">   <span class="tag">&lt;<span class="name">mvc:default-servlet-handler</span> /&gt;</span> </span><br><span class="line"> </span><br><span class="line">  <span class="comment">&lt;!-- 完成请求和POJO映射 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">class</span>=<span class="string">&quot;org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter&quot;</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">mvc:annotation-driven</span> /&gt;</span></span><br><span class="line">    </span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">class</span>=<span class="string">&quot;org.springframework.web.servlet.view.InternalResourceViewResolver&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">id</span>=<span class="string">&quot;internalResourceViewResolver&quot;</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 前缀 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;prefix&quot;</span> <span class="attr">value</span>=<span class="string">&quot;/WEB-INF/jsp/&quot;</span> /&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 后缀 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;suffix&quot;</span> <span class="attr">value</span>=<span class="string">&quot;.jsp&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>其中 org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdaper 就是我们的视图控制器了， 他通过</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;prefix&quot;</span> <span class="attr">value</span>=</span></span><br></pre></td></tr></table></figure>
+
+<p>提供你具体的返回视图， 在哪里返回呢？ 看上面的打上了@Controller的类中打上了@RequestMapping的那个方法， 他的return, 他return的就是具体的视图， 我们通过</p>
+<p>在配置文件中配置视图的位置， 前缀比如说这个视图在WEB-INF目录下的jsp目录下， 后缀就是他以.jsp页面结尾的后缀。 当然视图还有多种方法， 这里我给出的是最简单暴力的方法。   </p>
+<p> 那么整个入门项目貌似就完成了，下面我给出在我机子上面的运行截图：</p>
+<p>   </p>
+<p><img src="https://img-blog.csdn.net/20160629223342632?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">  </p>
+<p>   </p>
+<p>最近很忙，所以写的很不好， 望各位多加指正， 关于Spring的其他(对REST的支持，权限框架， 事务管理， IOC容器)。 我会等有空后跟大家分享。对于书籍，</p>
+<p>Spring in action 和Spring3.0x企业实战 这2本书我觉得很好呢。 嘿嘿</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java-spring-mvc-spring/" rel="tag"># java spring mvc spring</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/06/04/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%9A%20%E7%AE%80%E5%8D%95%E5%B7%A5%E5%8E%82%EF%BC%8C%20%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95%EF%BC%8C%20%E5%92%8C%E6%8A%BD%E8%B1%A1%E5%B7%A5%E5%8E%82%E6%80%BB%E7%BB%93/" rel="next" title="设计模式： 简单工厂， 工厂方法， 和抽象工厂总结">
+                <i class="fa fa-chevron-left"></i> 设计模式： 简单工厂， 工厂方法， 和抽象工厂总结
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/07/02/SpringMvc%E5%AE%9E%E7%8E%B0%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/" rel="prev" title="SpringMvc实现文件上传">
+                SpringMvc实现文件上传 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2017 &mdash; <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

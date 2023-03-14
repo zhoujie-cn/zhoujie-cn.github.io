@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="设计模式 java," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="简单工厂(SimpleFactory)                        简单工厂是类的一种创建模式， 又叫做静态工厂方法模式， 他由一个工厂对象决定创建出哪一种产品的实例。(确切的说，我们像工厂类传入参数来决定                          创建哪一个产品类的实例)  UML图如下：                      我们以一个登录验证来实现一下简单工">
+<meta property="og:type" content="article">
+<meta property="og:title" content="设计模式： 简单工厂， 工厂方法， 和抽象工厂总结">
+<meta property="og:url" content="http://example.com/2016/06/04/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%9A%20%E7%AE%80%E5%8D%95%E5%B7%A5%E5%8E%82%EF%BC%8C%20%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95%EF%BC%8C%20%E5%92%8C%E6%8A%BD%E8%B1%A1%E5%B7%A5%E5%8E%82%E6%80%BB%E7%BB%93/index.html">
+<meta property="og:site_name" content="周杰">
+<meta property="og:description" content="简单工厂(SimpleFactory)                        简单工厂是类的一种创建模式， 又叫做静态工厂方法模式， 他由一个工厂对象决定创建出哪一种产品的实例。(确切的说，我们像工厂类传入参数来决定                          创建哪一个产品类的实例)  UML图如下：                      我们以一个登录验证来实现一下简单工">
+<meta property="og:locale">
+<meta property="article:published_time" content="2016-06-04T09:47:41.000Z">
+<meta property="article:modified_time" content="2023-03-14T06:46:35.703Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="设计模式 java">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://example.com/2016/06/04/设计模式： 简单工厂， 工厂方法， 和抽象工厂总结/"/>
+
+
+
+
+
+  <title>设计模式： 简单工厂， 工厂方法， 和抽象工厂总结 | 周杰</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">周杰</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2016/06/04/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%9A%20%E7%AE%80%E5%8D%95%E5%B7%A5%E5%8E%82%EF%BC%8C%20%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95%EF%BC%8C%20%E5%92%8C%E6%8A%BD%E8%B1%A1%E5%B7%A5%E5%8E%82%E6%80%BB%E7%BB%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="周杰">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">设计模式： 简单工厂， 工厂方法， 和抽象工厂总结</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-06-04T17:47:41+08:00">
+                2016-06-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <span id="more"></span>
+
+<h4 id=""><a href="#" class="headerlink" title=""></a></h4><p>简单工厂(SimpleFactory)</p>
+<p>                       简单工厂是类的一种创建模式， 又叫做静态工厂方法模式， 他由一个工厂对象决定创建出哪一种产品的实例。(确切的说，我们像工厂类传入参数来决定</p>
+<p>                         创建哪一个产品类的实例)</p>
+<p> UML图如下：</p>
+<p>                  </p>
+<p>  我们以一个登录验证来实现一下简单工厂：</p>
+<p>                                                </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">Login</span>&#123;</span><br><span class="line">	<span class="comment">//登录验证</span></span><br><span class="line">	<span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">verify</span><span class="params">(String name, String password)</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DomainLogin</span> <span class="keyword">implements</span> <span class="title class_">Login</span>&#123;</span><br><span class="line">	</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">verify</span><span class="params">(String name, String password)</span>&#123;</span><br><span class="line">		</span><br><span class="line">		<span class="comment">//业务逻辑</span></span><br><span class="line">		<span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">PasswordLogin</span> <span class="keyword">implements</span> <span class="title class_">Login</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">verify</span><span class="params">(String name, String password)</span> &#123;</span><br><span class="line">        <span class="comment">// TODO Auto-generated method stub</span></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * 业务逻辑</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">&lt;span style=<span class="string">&quot;color:#FF0000;&quot;</span>&gt;</span><br><span class="line">工厂类LoginManager，根据调用者不同的要求，</span><br><span class="line">创建出不同的登录对象并返回。而如果碰到不合法的要求，</span><br><span class="line">会返回一个Runtime异常&lt;/span&gt;。</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">LoginManager</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Login <span class="title function_">factory</span><span class="params">(String type)</span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(type.equals(<span class="string">&quot;password&quot;</span>))&#123;</span><br><span class="line">            </span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">PasswordLogin</span>();</span><br><span class="line">            </span><br><span class="line">        &#125;<span class="keyword">else</span> <span class="keyword">if</span>(type.equals(<span class="string">&quot;passcode&quot;</span>))&#123;</span><br><span class="line">            </span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">DomainLogin</span>();</span><br><span class="line">            </span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            <span class="comment">/**</span></span><br><span class="line"><span class="comment">             * 这里抛出一个自定义异常会更恰当</span></span><br><span class="line"><span class="comment">             */</span></span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(<span class="string">&quot;没有找到登录类型&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">测试类：</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Test</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="comment">// TODO Auto-generated method stub</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">loginType</span> <span class="operator">=</span> <span class="string">&quot;password&quot;</span>;</span><br><span class="line">        <span class="type">String</span> <span class="variable">name</span> <span class="operator">=</span> <span class="string">&quot;name&quot;</span>;</span><br><span class="line">        <span class="type">String</span> <span class="variable">password</span> <span class="operator">=</span> <span class="string">&quot;password&quot;</span>;</span><br><span class="line">        <span class="type">Login</span> <span class="variable">login</span> <span class="operator">=</span> LoginManager.factory(loginType);</span><br><span class="line">        <span class="type">boolean</span> <span class="variable">bool</span> <span class="operator">=</span> login.verify(name, password);</span><br><span class="line">        <span class="keyword">if</span> (bool) &#123;</span><br><span class="line">            <span class="comment">/**</span></span><br><span class="line"><span class="comment">             * 业务逻辑</span></span><br><span class="line"><span class="comment">             */</span></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">/**</span></span><br><span class="line"><span class="comment">             * 业务逻辑</span></span><br><span class="line"><span class="comment">             */</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>简单工厂的优点：</p>
+<p>                  根据客户端给的参数动态的决定要实例化哪一个类，用户在使用时可以直接根据工厂类去创建所需的实例，而无需了解这些对象是如何创建以及如何组织的。有利于整个软件体系结构的优化。而且提供了一个责任的分割，当系统改动时。(比如说上面的登录)无需修改调用者。</p>
+<p>简单工厂的缺点：</p>
+<p>　这个工厂类集中了所以的创建逻辑，当有复杂的多层次等级结构时，所有的业务逻辑都在这个工厂类中实现。什么时候它不能工作了，整个系统都会受到影响。而且，如果有多种产品那么就都会混淆在工厂类里面，违背了单一原则。当我新增加一个产品的时候必须修改工厂类，相应的工厂类就需要重新编译一遍。这也违反了开闭原则。</p>
+<p>工厂方法（Factory Meathod）：</p>
+<p>               工厂方法的用意是定义一个创建产品对象的工厂接口，将实际的创建工作推迟到子类中去.  </p>
+<p>              工厂方法模式的核心是一个抽象工厂类， 而简单工厂模式把核心放在一个具体类上。  工厂方法模式可以允许很多具体工厂类从抽象工厂类中将创建行为继承下来,这样做的好处是可以允许系统在不修改具体工厂类的情况下引进新的产品。</p>
+<p>      我们知道在上面的简单工厂中，实例化一个产品类取决于工厂类， 修改一个产品也需要改动工厂类。等等等</p>
+<p>      它知道的有点太多了， 我们知道一人专权后果很严重~。 所以我们决定改进一下。</p>
+<p>      首先，核心的工厂类不在负责所有的产品的创建。  而且直接被迫将权利给下面的“大臣”，也就是他的子类</p>
+<p>       所以工厂类摇身一变变成了抽象工厂类， 他只负责命令， 而不再是亲力亲为。下面是工厂方法涉及的角色名称：</p>
+<p>          </p>
+<p>抽象工厂角色: 担任这个角色的是工厂方法模式的核心.,它是与应用程序无关</p>
+<p> 的。 任何在模式中创建对象的工厂类必须实现这个接口。</p>
+<p>具体工厂角色： 担任这个角色的是实现了抽象工厂接口的具体Java</p>
+<p>        类。 具体工厂角色含有与应用密切相关的逻辑，并且受到应用程序的调用以创建</p>
+<p>       以创建产品对象。</p>
+<p>抽象产品角色:工厂方法模式所创建的对象的超类型，也就是产品对象的共同</p>
+<p>         父类或共同拥有的接口。  </p>
+<p>具体产品角色： 这个角色实现了抽象产品角色所声明的接口。  </p>
+<p>      <br>  我们以一个系统来演示工厂方法：<br>      <br> 此类图和代码来自于Java与模式。 在这里抽象工厂类FruitGardener是抽象工厂角色（皇帝），但是他并没有掌握<br> 生杀大权， 这项权利被交给了它的子类（法庭，威武威武的那种），即AppleGardener StawberryGardener 和<br>GrapeGardener.  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*抽象工厂角色 FruitGardener*/</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">FruitGadrener</span>&#123;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	      工厂方法</span></span><br><span class="line"><span class="comment">	*/</span></span><br><span class="line">	</span><br><span class="line">	<span class="keyword">public</span> Fruit <span class="title function_">factory</span><span class="params">()</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/*具体工厂类 AppleGardener*/</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">AppleGardener</span></span><br><span class="line">        <span class="keyword">implements</span> <span class="title class_">FruitGardener</span></span><br><span class="line">		&#123;</span><br><span class="line">			</span><br><span class="line">			</span><br><span class="line">			 <span class="keyword">public</span> Fruit <span class="title function_">factory</span><span class="params">()</span></span><br><span class="line">			 &#123;</span><br><span class="line">				  <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Apple</span>();</span><br><span class="line">			 &#125;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/*StrawberryGardener类是一个具体工厂类*/</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">StrawberryGardener</span> </span><br><span class="line">           <span class="keyword">implements</span> <span class="title class_">FruitGardener</span></span><br><span class="line">		   &#123;</span><br><span class="line">			   </span><br><span class="line">			   <span class="keyword">public</span> Fruit <span class="title function_">factory</span><span class="params">()</span>&#123;</span><br><span class="line">				   <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Apple</span>();</span><br><span class="line">			   &#125;</span><br><span class="line">			   </span><br><span class="line">		   &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//抽象产品角色Fruit源码</span></span><br><span class="line"> <span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">Fruit</span></span><br><span class="line"> &#123;</span><br><span class="line">	   <span class="keyword">void</span> <span class="title function_">grow</span><span class="params">()</span>;</span><br><span class="line">	   <span class="keyword">void</span> <span class="title function_">harvest</span><span class="params">()</span>;</span><br><span class="line">	   <span class="keyword">void</span> <span class="title function_">plant</span><span class="params">()</span>;</span><br><span class="line">	 </span><br><span class="line"> &#125;</span><br><span class="line"> </span><br><span class="line"> <span class="comment">// 具体产品类，实现了Fruit接口</span></span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Apple</span> <span class="keyword">implements</span> <span class="title class_">Fruit</span>&#123;</span><br><span class="line">	</span><br><span class="line">	 <span class="keyword">private</span> <span class="type">int</span> treeAge;</span><br><span class="line">	 </span><br><span class="line">	 <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">grow</span><span class="params">()</span></span><br><span class="line">	 &#123;</span><br><span class="line">		 System.out.println(<span class="string">&quot;Apple is growing&quot;</span>);</span><br><span class="line">	 &#125;</span><br><span class="line">	 </span><br><span class="line">	 <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">harvest</span><span class="params">()</span>&#123;</span><br><span class="line">		  System.out.println(<span class="string">&quot;Apple harvested&quot;</span>);</span><br><span class="line">	 &#125;</span><br><span class="line">	 </span><br><span class="line">	 </span><br><span class="line">	 <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">plant</span><span class="params">()</span>&#123;</span><br><span class="line">		  System.out.println(<span class="string">&quot;Apple  planted&quot;</span>);</span><br><span class="line">	 &#125;</span><br><span class="line">	 </span><br><span class="line">	 <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">getTreeAge</span><span class="params">()</span>&#123;</span><br><span class="line">		 </span><br><span class="line">		  <span class="keyword">return</span> treeAge;</span><br><span class="line">	 &#125;</span><br><span class="line">	 </span><br><span class="line">	 <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setTreeAge</span><span class="params">(<span class="type">int</span> treeAge)</span>&#123;</span><br><span class="line">		 <span class="built_in">this</span>.treeAge=treeAge;</span><br><span class="line">	 &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/*具体产品类 Strawberry 源码如下:*/</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Strawberry</span> <span class="keyword">implements</span> <span class="title class_">Fruit</span></span><br><span class="line">&#123;</span><br><span class="line">	 <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">grow</span><span class="params">()</span></span><br><span class="line">	 &#123;</span><br><span class="line">		 System.out.println(<span class="string">&quot;Strawberry is growing&quot;</span>);</span><br><span class="line">	 &#125;</span><br><span class="line">	 </span><br><span class="line">	 <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">harvest</span><span class="params">()</span>&#123;</span><br><span class="line">		  System.out.println(<span class="string">&quot;Strawberry harvested&quot;</span>);</span><br><span class="line">	 &#125;</span><br><span class="line">	 </span><br><span class="line">	 </span><br><span class="line">	 <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">plant</span><span class="params">()</span>&#123;</span><br><span class="line">		  System.out.println(<span class="string">&quot;Strawberry planted&quot;</span>);</span><br><span class="line">	 &#125;</span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*具体产品类 Grape*/</span></span><br><span class="line"> <span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Grape</span> <span class="keyword">implements</span> <span class="title class_">Fruit</span></span><br><span class="line"> &#123;</span><br><span class="line">	  <span class="keyword">private</span> <span class="type">boolean</span> seedless;</span><br><span class="line">	  <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">grow</span><span class="params">()</span></span><br><span class="line">	 &#123;</span><br><span class="line">		 System.out.println(<span class="string">&quot;Grapeis growing&quot;</span>);</span><br><span class="line">	 &#125;</span><br><span class="line">	 </span><br><span class="line">	 <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">harvest</span><span class="params">()</span>&#123;</span><br><span class="line">		  System.out.println(<span class="string">&quot;Grape harvested&quot;</span>);</span><br><span class="line">	 &#125;</span><br><span class="line">	 </span><br><span class="line">	 </span><br><span class="line">	 <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">plant</span><span class="params">()</span>&#123;</span><br><span class="line">		  System.out.println(<span class="string">&quot;Grape planted&quot;</span>);</span><br><span class="line">	 &#125;</span><br><span class="line">	</span><br><span class="line">	 <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">getseedless</span><span class="params">()</span>&#123;</span><br><span class="line">		  <span class="keyword">return</span> seedless;;</span><br><span class="line">	 &#125;</span><br><span class="line">	 </span><br><span class="line">	 <span class="keyword">public</span> <span class="title function_">setseedless</span><span class="params">()</span>&#123;</span><br><span class="line">		 </span><br><span class="line">		 <span class="built_in">this</span>.seedless=seedless;</span><br><span class="line">	 &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<p>抽象工厂：<br>             大家都知道工厂方法他所针对的就是一个产品族，也就是工厂方法所提供的产品都是来自一个接口，或者一个抽象类。 而抽象工厂的产品可以来自多个接口或者多个抽象类。 抽象工厂的用意就是像客户端提供一个接口，使得客户端在不必指定产品的具体<br>类型的情况下，创建多个产品族中产品对象。  </p>
+<p> 根据里氏代换的原则，任何可以接收父类的地方，都应该接收子类型.（反之不成立),那么只要类型与这些抽象<br>的产品角色相同，工厂类就可以负责创建由抽象产品的具体子类。 如下：  </p>
+<p>                    </p>
+<p>举个栗子╭(╯^╰)╮：<br>     以一个农村系统为例：<br>                      我们有2个产品等级结构，分别为 水果Fruit,  和蔬菜Veggie.<br>                      类图如下：  
+                                     </p>
+<p>蔬菜类图：  
+                     </p>
+<p>他的产品等级结构：  
+                     </p>
+<p> 用一个工厂族封装创建过程：  
+           
+                   
+          </p>
+<p>                   UML图如下：  
+                     
+        </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">Gardener</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">NorthernGardener</span> <span class="keyword">implements</span> <span class="title class_">Gardener</span>&#123;</span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	  水果的工厂方法</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">	*/</span></span><br><span class="line">	</span><br><span class="line">	<span class="keyword">public</span> Fruit <span class="title function_">createFruit</span><span class="params">(String name)</span></span><br><span class="line">	&#123; <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">NorthernFruit</span>(name);&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">/*蔬菜工厂方法*/</span></span><br><span class="line">	<span class="keyword">public</span> Veggie <span class="title function_">createVeggie</span><span class="params">(String name)</span></span><br><span class="line">	&#123;<span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">NorthernVeggie</span>(name);&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TropicalGardener</span> <span class="keyword">implements</span> <span class="title class_">Gardener</span>&#123;</span><br><span class="line"></span><br><span class="line">       <span class="comment">/*水果的工厂方法*/</span></span><br><span class="line">	  <span class="keyword">public</span> Fruit <span class="title function_">createFruit</span><span class="params">(String name)</span>&#123;</span><br><span class="line">		   <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">TropicalFruit</span>(name);</span><br><span class="line">	  &#125;  </span><br><span class="line">	  </span><br><span class="line">	  <span class="comment">/*蔬菜的工厂方法*/</span></span><br><span class="line">	  .<span class="keyword">public</span> Veggie <span class="title function_">createVeggie</span><span class="params">(String name)</span></span><br><span class="line">	  &#123;<span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">TropicalVeggie</span>(name);&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Veggie</span> <span class="keyword">implements</span> <span class="title class_">Veggie</span></span><br><span class="line"> &#123;</span><br><span class="line">	 <span class="keyword">private</span> String name;</span><br><span class="line">	 </span><br><span class="line">	  <span class="keyword">public</span> <span class="title function_">NortthernVeggie</span><span class="params">(String name)</span>&#123; &#125;</span><br><span class="line">	  </span><br><span class="line">	  <span class="keyword">public</span> String <span class="title function_">getName</span><span class="params">()</span>&#123;<span class="keyword">return</span> name;&#125;</span><br><span class="line">	  </span><br><span class="line">	  <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setName</span><span class="params">(String name)</span>&#123;<span class="built_in">this</span>.name=name;&#125;</span><br><span class="line">	 </span><br><span class="line"> &#125;</span><br><span class="line"> </span><br><span class="line"> <span class="comment">/*具体产品类TropicalVeggie*/</span></span><br><span class="line"> <span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TropicalVeggie</span> <span class="keyword">implements</span> <span class="title class_">Veggie</span></span><br><span class="line"> &#123;</span><br><span class="line">	  <span class="keyword">private</span> String name;</span><br><span class="line">	  </span><br><span class="line">	  <span class="keyword">public</span> <span class="title function_">TropicalVeggie</span><span class="params">(String name)</span>&#123;<span class="built_in">this</span>.name=name;&#125;</span><br><span class="line">	  <span class="keyword">public</span> String <span class="title function_">getName</span><span class="params">()</span>&#123;<span class="keyword">return</span> name;&#125;  </span><br><span class="line">	  <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setName</span><span class="params">(String name)</span>&#123;<span class="built_in">this</span>.name=name;&#125;</span><br><span class="line">	 </span><br><span class="line"> &#125;</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"> <span class="comment">/*抽象产品角色*/</span></span><br><span class="line"> <span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">Fruit</span>&#123;&#125;</span><br><span class="line"> </span><br><span class="line"> <span class="comment">/*抽象产品角色NorthernFruit*/</span></span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">NorthernFruit</span> <span class="keyword">implements</span> <span class="title class_">Fruit</span></span><br><span class="line">  &#123;</span><br><span class="line">	   <span class="keyword">private</span> String name;</span><br><span class="line">	   <span class="keyword">public</span> <span class="title function_">NorthernFruit</span><span class="params">(String name)</span>&#123; &#125;</span><br><span class="line">	   <span class="keyword">public</span> String <span class="title function_">getName</span><span class="params">()</span>&#123;<span class="keyword">return</span> name;&#125;  </span><br><span class="line">	  <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setName</span><span class="params">(String name)</span>&#123;<span class="built_in">this</span>.name=name;&#125;</span><br><span class="line">	  </span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="comment">/*抽象产品角色TropicalFruit*/</span></span><br><span class="line">   <span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TropicalFruit</span> <span class="keyword">implements</span> <span class="title class_">Fruit</span></span><br><span class="line">   &#123;</span><br><span class="line">	   <span class="keyword">private</span> String name;</span><br><span class="line">	   <span class="keyword">public</span> <span class="title function_">TropicalFruit</span><span class="params">(String name)</span>&#123;&#125;</span><br><span class="line">	     <span class="keyword">public</span> String <span class="title function_">getName</span><span class="params">()</span>&#123;<span class="keyword">return</span> name;&#125;  </span><br><span class="line">	  <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setName</span><span class="params">(String name)</span>&#123;<span class="built_in">this</span>.name=name;&#125;</span><br><span class="line">	   </span><br><span class="line">   &#125;</span><br><span class="line">  </span><br></pre></td></tr></table></figure>
+
+<p>在使用时，客户端只需要创建具体工厂的实例，然后调用工厂对象的方法，就可以得到所需要的产品对象。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-java/" rel="tag"># 设计模式 java</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/05/19/2%E4%B8%AA%E9%98%9F%E5%88%97%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E6%A0%88/" rel="next" title="2个队列实现一个栈">
+                <i class="fa fa-chevron-left"></i> 2个队列实现一个栈
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/06/29/SpringMvc%E5%88%9D%E5%85%A5%E9%97%A8%EF%BC%88%E5%B8%A6%E5%AE%8C%E6%95%B4%E5%85%A5%E9%97%A8%E9%A1%B9%E7%9B%AE%EF%BC%89/" rel="prev" title="SpringMvc初入门（带完整入门项目）">
+                SpringMvc初入门（带完整入门项目） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text"></span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2017 &mdash; <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

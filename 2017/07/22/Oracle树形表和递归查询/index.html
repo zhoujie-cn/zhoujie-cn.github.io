@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="oracle 递归 SQL," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="在平常的业务系统开发中，我们经常需要设计数据层次关系，如在经典的user-role-permission权限设计中， 需要对权限表的数据设计成一种层次依赖关系，如最顶层的为系统管理，系统管理的下一层为角色 管理，角色管理的下一层又为角色的CRUD操作， 那么这种表就可以抽象成为数据结构里面的B树. 如下表 : 123456CREATE TABLE &quot;U_PERMISSI">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Oracle树形表和递归查询">
+<meta property="og:url" content="http://example.com/2017/07/22/Oracle%E6%A0%91%E5%BD%A2%E8%A1%A8%E5%92%8C%E9%80%92%E5%BD%92%E6%9F%A5%E8%AF%A2/index.html">
+<meta property="og:site_name" content="周杰">
+<meta property="og:description" content="在平常的业务系统开发中，我们经常需要设计数据层次关系，如在经典的user-role-permission权限设计中， 需要对权限表的数据设计成一种层次依赖关系，如最顶层的为系统管理，系统管理的下一层为角色 管理，角色管理的下一层又为角色的CRUD操作， 那么这种表就可以抽象成为数据结构里面的B树. 如下表 : 123456CREATE TABLE &quot;U_PERMISSI">
+<meta property="og:locale">
+<meta property="og:image" content="https://img-blog.csdn.net/20170722194710692?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaGVsbG93b3JkYXBp/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:image" content="https://img-blog.csdn.net/20170722174815238?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaGVsbG93b3JkYXBp/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:image" content="https://img-blog.csdn.net/20170722185125838?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaGVsbG93b3JkYXBp/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:image" content="https://img-blog.csdn.net/20170722191804601?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaGVsbG93b3JkYXBp/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:image" content="https://img-blog.csdn.net/20170722192721218?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaGVsbG93b3JkYXBp/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="article:published_time" content="2017-07-22T12:04:54.000Z">
+<meta property="article:modified_time" content="2023-03-14T06:46:35.702Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="oracle 递归 SQL">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdn.net/20170722194710692?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaGVsbG93b3JkYXBp/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://example.com/2017/07/22/Oracle树形表和递归查询/"/>
+
+
+
+
+
+  <title>Oracle树形表和递归查询 | 周杰</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">周杰</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2017/07/22/Oracle%E6%A0%91%E5%BD%A2%E8%A1%A8%E5%92%8C%E9%80%92%E5%BD%92%E6%9F%A5%E8%AF%A2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="周杰">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Oracle树形表和递归查询</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-22T20:04:54+08:00">
+                2017-07-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SQL/" itemprop="url" rel="index">
+                    <span itemprop="name">SQL</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <span id="more"></span>
+
+<p>       在平常的业务系统开发中，我们经常需要设计数据层次关系，如在经典的user-role-permission权限设计中， 需要对权限表的数据设计成一种层次依赖关系，如最顶层的为系统管理，系统管理的下一层为角色 管理，角色管理的下一层又为角色的CRUD操作， 那么这种表就可以抽象成为数据结构里面的B树. 如下表 :</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> &quot;U_PERMISSION&quot; </span><br><span class="line">   (	&quot;ID&quot; NUMBER(<span class="number">20</span>,<span class="number">0</span>), </span><br><span class="line">	&quot;URL&quot; VARCHAR2(<span class="number">256</span> BYTE), </span><br><span class="line">	&quot;NAME&quot; VARCHAR2(<span class="number">50</span> BYTE), </span><br><span class="line">	&quot;PARENT&quot; NUMBER(<span class="number">20</span>,<span class="number">0</span>)</span><br><span class="line">   ) </span><br></pre></td></tr></table></figure>
+
+<p>在上表中 id表示当前树的节点。url, name表示可访问的url路径，name表示url描述。 parent表示当前节点的父节点 ，如果当前节点是跟节点则parent用0表示(别用NULL违反了数据库约束)。 那么上面的表就可以抽象成如下图.</p>
+<p><img src="https://img-blog.csdn.net/20170722194710692?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaGVsbG93b3JkYXBp/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">  </p>
+<p>接着我们插入测试数据 :</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">1</span>,<span class="string">&#x27;*&#x27;</span>,<span class="string">&#x27;系统管理&#x27;</span>,<span class="number">0</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">2</span>,<span class="string">&#x27;*&#x27;</span>,<span class="string">&#x27;权限管理&#x27;</span>,<span class="number">1</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">20</span>,<span class="string">&#x27;/role/allocation&#x27;</span>,<span class="string">&#x27;角色分配&#x27;</span>,<span class="number">23</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">4</span>,<span class="string">&#x27;/permission/index&#x27;</span>,<span class="string">&#x27;权限列表&#x27;</span>,<span class="number">2</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">6</span>,<span class="string">&#x27;/permission/addPermission.shtml&#x27;</span>,<span class="string">&#x27;权限添加&#x27;</span>,<span class="number">2</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">7</span>,<span class="string">&#x27;/permission/deletePermissionById&#x27;</span>,<span class="string">&#x27;权限删除&#x27;</span>,<span class="number">2</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">8</span>,<span class="string">&#x27;/member/list.shtml&#x27;</span>,<span class="string">&#x27;用户列表&#x27;</span>,<span class="number">22</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">9</span>,<span class="string">&#x27;/member/online.shtml&#x27;</span>,<span class="string">&#x27;在线用户&#x27;</span>,<span class="number">22</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">10</span>,<span class="string">&#x27;/member/changeSessionStatus&#x27;</span>,<span class="string">&#x27;用户Session踢出&#x27;</span>,<span class="number">22</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">11</span>,<span class="string">&#x27;/member/forbidUserById&#x27;</span>,<span class="string">&#x27;用户激活or禁止&#x27;</span>,<span class="number">22</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">12</span>,<span class="string">&#x27;/member/deleteUserById&#x27;</span>,<span class="string">&#x27;用户删除&#x27;</span>,<span class="number">22</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">13</span>,<span class="string">&#x27;/permission/addPermission2Role&#x27;</span>,<span class="string">&#x27;权限分配&#x27;</span>,<span class="number">2</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">14</span>,<span class="string">&#x27;/role/clearRoleByUserIds&#x27;</span>,<span class="string">&#x27;用户角色分配清空&#x27;</span>,<span class="number">23</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">15</span>,<span class="string">&#x27;/role/addRole2User&#x27;</span>,<span class="string">&#x27;角色分配保存&#x27;</span>,<span class="number">23</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">16</span>,<span class="string">&#x27;/role/deleteRoleById.shtml&#x27;</span>,<span class="string">&#x27;角色列表删除&#x27;</span>,<span class="number">23</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">17</span>,<span class="string">&#x27;/role/addRole&#x27;</span>,<span class="string">&#x27;角色列表添加&#x27;</span>,<span class="number">23</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">18</span>,<span class="string">&#x27;role/index&#x27;</span>,<span class="string">&#x27;角色列表&#x27;</span>,<span class="number">23</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">19</span>,<span class="string">&#x27;/permission/allocation&#x27;</span>,<span class="string">&#x27;权限分配2&#x27;</span>,<span class="number">2</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">22</span>,<span class="string">&#x27;*&#x27;</span>,<span class="string">&#x27;用户管理&#x27;</span>,<span class="number">1</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">23</span>,<span class="string">&#x27;*&#x27;</span>,<span class="string">&#x27;角色管理&#x27;</span>,<span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
+<p>既然都已经创建树形表了那么肯定要对树进行操作。就像我们在大学的数据结构一书中所做的那样对树进行递归遍历(前序，中序，后序. 忘记了的面壁….) 在oralce中通过</p>
+<p>start with….connect by…prior语法，依托该语法我们就可以对上面树形表进行递归遍历。</p>
+<p>示例:</p>
+<p>  给出一个节点的值，求出的他父节点和祖宗节点：</p>
+<p><img src="https://img-blog.csdn.net/20170722174815238?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaGVsbG93b3JkYXBp/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">  </p>
+<p>         </p>
+<p>start with子句： 递归的条件，需要注意的是如果with后面的值是子节点那么求出的就是他的父节点和祖宗节点，如果是父节点那么求出的就是他的子节点和子孙节点，</p>
+<p>                             如果不懂可以把上面start with 后面的条件改成 p.parent&#x3D;0，就可以理解了。</p>
+<p>connect by子句：连接条件。 关键词prior，prior跟它右边的父节点放在一起(prior p.parent)表示往父节点方向遍历, 反之，如果 prior跟子节点放在一起(prior p.id)表示往</p>
+<p>                             叶子方向遍历。 这里需要注意的 &#x3D;p.id 放在prior关键词的前面或者后面都没什么关系，也就是上面可以这样写 p.id&#x3D; prior p.paren。重要的是prior旁边放的</p>
+<p>                             是什么。</p>
+<p>level伪列： 递归的层次表示， 用来进行输出缩进。可以看到递归层次，看起来很直观。 需要注意的是Level 也可以放在Group by后面，也可以放在select 后面.</p>
+<p>下面我来讲一下递归语法的一些用法和一些需要注意的地方：</p>
+<p>             有趣的是我们可以不使用start with 子句，它不像程序语言一样不写就会造成死循环（插一句嘴,曾经有一人和我聊天提到SQL不是编程语言，因为他不满足图灵完全。因为他并不能造成死循环，其实通过递归语句就可以，这个坑我会在后面演示，在本文中并不讨论SQL是不是编程语言）。它只会把会整个表的数据遍历一遍，每一个数据做一次</p>
+<p>根节点，然后遍历树中的其他节点。</p>
+<p> <img src="https://img-blog.csdn.net/20170722185125838?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaGVsbG93b3JkYXBp/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">  </p>
+<p>他等价于如下SQL：</p>
+<p> </p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span>  p.ID,p.NAME,p.PARENT, level <span class="keyword">from</span> u_permission p <span class="keyword">start</span> <span class="keyword">with</span> p.PARENT <span class="keyword">in</span>( <span class="string">&#x27;祖宗节点&#x27;</span>,<span class="string">&#x27;父节点&#x27;</span>,<span class="string">&#x27;子节点&#x27;</span>,<span class="string">&#x27;孙子节点&#x27;</span> ) <span class="keyword">connect</span> <span class="keyword">by</span> p.id<span class="operator">=</span> prior p.parent;</span><br></pre></td></tr></table></figure>
+
+<p>2. start with 和connect by prior的位置可以互换:     </p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span>  p.ID,p.NAME,p.PARENT, level <span class="keyword">from</span> u_permission p <span class="keyword">start</span> <span class="keyword">with</span> p.PARENT<span class="operator">=</span><span class="number">1</span> <span class="keyword">connect</span> <span class="keyword">by</span> p.id<span class="operator">=</span> prior p.parent;</span><br><span class="line"><span class="keyword">select</span>  p.ID,p.NAME,p.PARENT, level <span class="keyword">from</span> u_permission p  <span class="keyword">connect</span> <span class="keyword">by</span> p.id<span class="operator">=</span> prior p.parent <span class="keyword">start</span> <span class="keyword">with</span> p.PARENT<span class="operator">=</span><span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
+<p>上面二条的SQL意思是一样的。</p>
+<p>3.我们可以把start with看成是一个where，所以这也意味着我们可以在我们可以在除了最后部分以外的地方加where条件， 如：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span>  p.ID,p.NAME,p.PARENT, level <span class="keyword">from</span> u_permission p <span class="keyword">where</span> p.id<span class="operator">=</span>xxx <span class="keyword">start</span> <span class="keyword">with</span> p.PARENT<span class="operator">=</span><span class="number">1</span> <span class="keyword">connect</span> <span class="keyword">by</span> p.id<span class="operator">=</span> prior p.parent;</span><br></pre></td></tr></table></figure>
+
+<p>但是这里隐藏着一个坑， where条件的作用域不是在递归查询中的，而是在递归查询完后的。 所以如果理解不当他可以造成死循环（虽然会检测出来报ORA错误)也就是a的父节点是b, b的父节点是a。</p>
+<p>看一个实用的列子:  </p>
+<p>    如果有一个需求如根据user表的id查出他的权限树，这个时候我们就需要start with后面加子查询。</p>
+<p>      <img src="https://img-blog.csdn.net/20170722191804601?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaGVsbG93b3JkYXBp/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">  </p>
+<p>          </p>
+<p>    我们可以看到根据子查询返回的根节点查出所有子节点的父亲节点和祖宗节点。  </p>
+<p>下面是一些跟递归语法相关的函数(来自Oracle SQL高级编程)：</p>
+<p>      SYS_CINNECT_BY_PATH函数：</p>
+<p>              这个函数是用来返回组成层级的直到当前行的值, 我一图胜千言把。</p>
+<p>            <img src="https://img-blog.csdn.net/20170722192721218?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaGVsbG93b3JkYXBp/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">  </p>
+<p>    简单来说就是用来做拼接的，至于想拼接什么看各位看官的心情咯。</p>
+<p>CONNECT_BY_ISLEAF伪列：</p>
+<p>         这个伪列呢，说直白一点跟level的作用差不多，只不过他是用来在递归查询中显示叶子节点而非递归深度。 留给看官实验，不上传实验图片了。</p>
+<p>CONNECT_BY_ISCYCLE伪列 和NOCYCLE：</p>
+<p>          这个函数用于检测树中是不是出现了环，传统的数据结构树是不会出现环的，只有在图中才会出现环。 而在数据库中我说过，他不是正儿八经</p>
+<p>        的B树，他可能会出现一些不合人伦的事情，比如就像上面所说的死循环, a是b的父亲，b又叫a儿子这样尴尬的事情，Oracle会直接报出ORA-1436的</p>
+<p>        错误，告诉你这样不太好。 所以我们可以用nocycle函数解决这个问题，也就是让b当儿子。使得SQL符合逻辑。</p>
+<p>   </p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span>  connect_by_isleaf ,p.ID,p.NAME,p.PARENT, CONNECT_BY_ISCYCLE , level <span class="keyword">from</span> u_permission p  <span class="keyword">start</span> <span class="keyword">with</span>  p.PARENT<span class="operator">=</span><span class="number">1</span> <span class="keyword">connect</span> <span class="keyword">by</span> nocycle p.id<span class="operator">=</span> prior p.parent;</span><br></pre></td></tr></table></figure>
+
+<p>connect_by_isleaf  函数:  </p>
+<p>       在递归中检测当前节点是否包含下级节点，也就是说是不是叶子节点，是返回0， 不是返回1，  在动态的目录中有用。       </p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span>  connect_by_isleaf ,p.ID,p.NAME,p.PARENT, level <span class="keyword">from</span> u_permission p  <span class="keyword">start</span> <span class="keyword">with</span> p.PARENT <span class="keyword">is</span> <span class="keyword">null</span> <span class="keyword">connect</span> <span class="keyword">by</span> p.id<span class="operator">=</span> prior p.parent;</span><br></pre></td></tr></table></figure>
+
+<p>关于Oracle递归和树形表就介绍到这里了，下次给大家分享用SQL实现有向图。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/oracle-%E9%80%92%E5%BD%92-SQL/" rel="tag"># oracle 递归 SQL</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/03/23/%E4%BD%BF%E7%94%A8jdk1.8%E5%8E%BB%E9%99%A4%E9%80%BB%E8%BE%91%E4%B8%8A%E9%87%8D%E5%A4%8D%E7%9A%84HashMap%E7%9A%84value%E4%BB%A5%E5%8F%8A%E6%9E%84%E5%BB%BA%E6%9C%AC%E5%9C%B0%E7%BC%93/" rel="next" title="使用jdk1.8去除逻辑上重复的HashMap的value以及构建本地缓">
+                <i class="fa fa-chevron-left"></i> 使用jdk1.8去除逻辑上重复的HashMap的value以及构建本地缓
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/24/%E7%94%A8List%E6%9E%84%E5%BB%BA%E5%B8%A6%E6%9C%89%E5%B1%82%E6%AC%A1%E7%BB%93%E6%9E%84%E7%9A%84json%E6%95%B0%E6%8D%AE/" rel="prev" title="用List构建带有层次结构的json数据">
+                用List构建带有层次结构的json数据 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2017 &mdash; <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
