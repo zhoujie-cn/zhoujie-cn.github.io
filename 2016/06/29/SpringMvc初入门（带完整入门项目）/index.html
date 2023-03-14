@@ -86,14 +86,14 @@
 <meta property="og:site_name" content="周杰">
 <meta property="og:description" content="最近闲暇之余，感觉很久没有写博客了， 以前都是写一些算法， 今天打算写一下SpringMvc.   总的来说Mvc也算是一种设计模式，  不仅仅是Java, 前端js, 数据库。 也可以采用这种模式来达到一个业务逻辑和页面显示通过控制器达到解耦的目的。 SpringMvc可以跟SpringIOC无缝对接， 比起struts2也有好的几点如下：     第一：struts2 性能较低， 基本上在">
 <meta property="og:locale">
-<meta property="og:image" content="https://img-blog.csdn.net/20160629220239979?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
-<meta property="og:image" content="https://img-blog.csdn.net/20160629223342632?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:image" content="http://example.com/images/img13.jpg">
+<meta property="og:image" content="http://example.com/images/img14.jpg">
 <meta property="article:published_time" content="2016-06-29T14:39:05.000Z">
-<meta property="article:modified_time" content="2023-03-14T06:46:35.703Z">
+<meta property="article:modified_time" content="2023-03-14T09:07:05.245Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="java spring mvc spring">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://img-blog.csdn.net/20160629220239979?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta name="twitter:image" content="http://example.com/images/img13.jpg">
 
 
 
@@ -210,6 +210,16 @@
               <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
             
             分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
           </a>
         </li>
       
@@ -356,8 +366,7 @@
 <p> url-pattern 就是你要处理的URL， 我这里加上 “&#x2F;“ 意思是处理所有的URL。 （你也可以在Spring中配置&lt;mvc:resources&gt;这个元素）</p>
 <p>接着我们可以指定DispatcherServlet将请求发送给哪个控制器。   所有的请求都要通过DispatcherServlet，然后再由它进行分发， 一般我们将请求发送到HanderMapping上面，那什么是HanderMapping呢，HanderMapping的就是为每个请求找到合适的处理器handler. 那什么是handler呢， 通俗点讲就是标注了@RequestMapping的方法。</p>
 <p> 那么我们怎么确定控制器呢， 在通俗点讲就是在类上面标注@Controller注解进行装饰的class。  这个我在网络上找了一张图：</p>
-<p><img src="https://img-blog.csdn.net/20160629220239979?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center"></p>
-<p>首先，当前端的请求到达的时候， 我们根据我们所编写的请求类进行处理， 这个类必须打上@controller这个注解，以表示它是一个控制器类， 接着我们可以在这个类的方法</p>
+<p><img src="/../../images/img13.jpg" alt="Alt text"><br>首先，当前端的请求到达的时候， 我们根据我们所编写的请求类进行处理， 这个类必须打上@controller这个注解，以表示它是一个控制器类， 接着我们可以在这个类的方法</p>
 <p>里面打上@RequestMapping对请求进行装饰。</p>
 <p>   好的，首先我们先不管那么多概念， 心中得有一个流程的模型， 俗话说，代码能跑起来在想优化的事情。   那么知道这几个概念后，我们可以开始跑一跑这个小项目了，</p>
 <p>首先定义一个表单类， 他用javaScript进行GET方式的提交：</p>
@@ -388,7 +397,7 @@
 <p>在配置文件中配置视图的位置， 前缀比如说这个视图在WEB-INF目录下的jsp目录下， 后缀就是他以.jsp页面结尾的后缀。 当然视图还有多种方法， 这里我给出的是最简单暴力的方法。   </p>
 <p> 那么整个入门项目貌似就完成了，下面我给出在我机子上面的运行截图：</p>
 <p>   </p>
-<p><img src="https://img-blog.csdn.net/20160629223342632?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">  </p>
+<p><img src="/../../images/img14.jpg" alt="Alt text"></p>
 <p>   </p>
 <p>最近很忙，所以写的很不好， 望各位多加指正， 关于Spring的其他(对REST的支持，权限框架， 事务管理， IOC容器)。 我会等有空后跟大家分享。对于书籍，</p>
 <p>Spring in action 和Spring3.0x企业实战 这2本书我觉得很好呢。 嘿嘿</p>
@@ -500,9 +509,9 @@
             
               <div class="site-state-item site-state-posts">
               
-                <a href="/archives">
+                <a href="/archives/%7C%7C%20archive">
               
-                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-count">21</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -561,7 +570,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; 2017 &mdash; <span itemprop="copyrightYear">2023</span>
+        <div class="copyright">&copy; 2016 &mdash; <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

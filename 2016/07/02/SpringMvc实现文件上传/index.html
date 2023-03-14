@@ -86,13 +86,13 @@
 <meta property="og:site_name" content="周杰">
 <meta property="og:description" content="首先引入SpringMvc对文件上传的jar包。   commons-io   commons-fileupload   这个可以自行下载. 接着在你的Spirng配置文件中写入一个Bean: 12345&lt;bean id&#x3D;&quot;multipartResolver&quot; class&#x3D;&quot;org.springframework.web.multipart.commons.">
 <meta property="og:locale">
-<meta property="og:image" content="https://img-blog.csdn.net/20160702193755241?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:image" content="http://example.com/images/img12.jpg">
 <meta property="article:published_time" content="2016-07-02T12:20:13.000Z">
-<meta property="article:modified_time" content="2023-03-14T06:46:35.703Z">
+<meta property="article:modified_time" content="2023-03-14T09:02:18.101Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="Java HTTP Spring系列">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://img-blog.csdn.net/20160702193755241?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta name="twitter:image" content="http://example.com/images/img12.jpg">
 
 
 
@@ -209,6 +209,16 @@
               <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
             
             分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
           </a>
         </li>
       
@@ -348,7 +358,7 @@
 
 <p>写一个JSP页面， 在里面写一个表单，  我自己的机上把JSP命名为FileInput.jsp, 文件上传表单和普通表单不同</p>
 <p>的是他得声明为MIME类型。 在form属性里面设置 enctype&#x3D;””multipart&#x2F;form-data”  另外对服务器的请求方法为method&#x3D;”post”.  在input标签里面新增一个类型 类型名为 file, 那么视图层就是这样了。</p>
-<p>关于action属性， 填上你的项目的url, 如我的项目url为： 那么我下面的FileInput.jsp对应的就是 &#x2F;zd_web&#x2F;user&#x2F;fileUpload  当然方式不止这一种， 不过这一种简单、<img src="https://img-blog.csdn.net/20160702193755241?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center"></p>
+<p>关于action属性， 填上你的项目的url, 如我的项目url为： 那么我下面的FileInput.jsp对应的就是 &#x2F;zd_web&#x2F;user&#x2F;fileUpload  当然方式不止这一种， 不过这一种简单、<img src="/../../images/img12.jpg" alt="Alt text"></p>
 <p>FileInput.jsp:  </p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ page language=&quot;java&quot; contentType=&quot;text/html; charset=UTF-8&quot;  </span><br><span class="line">       pageEncoding=&quot;UTF-8&quot;%&gt;  </span><br><span class="line">   <span class="meta">&lt;!DOCTYPE <span class="keyword">html</span> <span class="keyword">PUBLIC</span> <span class="string">&quot;-//W3C//DTD HTML 4.01 Transitional//EN&quot;</span> <span class="string">&quot;http://www.w3.org/TR/html4/loose.dtd&quot;</span>&gt;</span>  </span><br><span class="line">   <span class="tag">&lt;<span class="name">html</span>&gt;</span>  </span><br><span class="line">   <span class="tag">&lt;<span class="name">head</span>&gt;</span>  </span><br><span class="line">   <span class="tag">&lt;<span class="name">meta</span> <span class="attr">http-equiv</span>=<span class="string">&quot;Content-Type&quot;</span> <span class="attr">content</span>=<span class="string">&quot;text/html; charset=UTF-8&quot;</span>&gt;</span>  </span><br><span class="line">   <span class="tag">&lt;<span class="name">title</span>&gt;</span>文件上传<span class="tag">&lt;/<span class="name">title</span>&gt;</span>  </span><br><span class="line">   <span class="tag">&lt;/<span class="name">head</span>&gt;</span>  </span><br><span class="line">   <span class="tag">&lt;<span class="name">body</span>&gt;</span>  </span><br><span class="line">       <span class="tag">&lt;<span class="name">form</span> <span class="attr">action</span>=<span class="string">&quot;/zd_web/user/fileUpload&quot;</span> <span class="attr">method</span>=<span class="string">&quot;post&quot;</span> <span class="attr">enctype</span>=<span class="string">&quot;multipart/form-data&quot;</span>&gt;</span>  </span><br><span class="line">           <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;file&quot;</span> <span class="attr">name</span>=<span class="string">&quot;fileUpload&quot;</span> /&gt;</span>  </span><br><span class="line">           <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;submit&quot;</span> <span class="attr">value</span>=<span class="string">&quot;上传&quot;</span> /&gt;</span>  </span><br><span class="line">       <span class="tag">&lt;/<span class="name">form</span>&gt;</span>  </span><br><span class="line">   <span class="tag">&lt;/<span class="name">body</span>&gt;</span>  </span><br><span class="line">   <span class="tag">&lt;/<span class="name">html</span>&gt;</span>  </span><br></pre></td></tr></table></figure>
 
@@ -469,9 +479,9 @@
             
               <div class="site-state-item site-state-posts">
               
-                <a href="/archives">
+                <a href="/archives/%7C%7C%20archive">
               
-                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-count">21</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -530,7 +540,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; 2017 &mdash; <span itemprop="copyrightYear">2023</span>
+        <div class="copyright">&copy; 2016 &mdash; <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

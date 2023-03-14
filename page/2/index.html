@@ -206,6 +206,16 @@
           </a>
         </li>
       
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
 
       
     </ul>
@@ -225,211 +235,6 @@
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2016/08/01/JAVA%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%20(JMM)%E5%92%8C%E5%90%8C%E6%AD%A5%E4%BB%A5%E5%8F%8A%E5%8F%AF%E8%A7%81%E6%80%A7/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="周杰">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/08/01/JAVA%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%20(JMM)%E5%92%8C%E5%90%8C%E6%AD%A5%E4%BB%A5%E5%8F%8A%E5%8F%AF%E8%A7%81%E6%80%A7/" itemprop="url">JAVA内存模型 (JMM)和同步以及可见性</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-08-01T23:42:24+08:00">
-                2016-08-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index">
-                    <span itemprop="name">Java</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <span id="more"></span>
-
-<p>可见性：</p>
-<p>   一般来说，我们对可见性的定义是一个线程对共享变量值的修改，能够被其他线程</p>
-<p>及时的看到，那么这个时候我们一般称这个变量是线程间可见的。</p>
-<p>那么什么是共享变量？</p>
-<p>      一般来讲，如果一个变量在多个线程的工作内存中都存在有副本，那么这个</p>
-<p>    变量就是这几个线程的共享变量。</p>
-<p> 那么啥是工作内存呢？ 这个时候就是我们的JMM登场了。</p>
-<p>Java内存模型（JMM）。描述了Java程序中各种线程共享变量的访问规则，以及在JVM中将变量存储到内存和从内存中读取出来变量这样的底层细节。</p>
-<p>在多核系统中，处理器一般有一层或多层的缓存，这些的缓存通过加速数据访问，和</p>
-<p>降低共享内存在总线上的通讯。来提高cpu性能。</p>
-<p>在处理器层面上，内存模型定义了一个充要条件，“让当前的处理器可以看到其他处理器写入到内存的数据”  以及 “其他处理器可以看到当前处理器写入到内存的数据”。</p>
-<p>有些处理器有很强的内存模型，能够让所有的处理器在任何时候任何指定的内存地址上都可以看到完全相同的值，而有的处理器内存模型较弱，在这种处理器中，必须需用内存屏障。来刷新本地处理器缓存并使本地处理器无效。目的是为了让当前处理器能够看到其他处理器的写操作或让其他处理器看到当前处理器的写操作。</p>
-<p>在JMM中所有的变量都存储在主内存中，且每个线程都有自己独立的工作内存，里面保存着该线程使用到的变量的副本。（其实就是主内存的一份拷贝）<br><img src="https://img-blog.csdn.net/20160801233853790?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">  </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Class Reordering&#123;</span><br><span class="line">  <span class="type">int</span> x=<span class="number">0</span>, y=<span class="number">0</span>;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">writer</span><span class="params">()</span>&#123;</span><br><span class="line">   x=<span class="number">1</span>;</span><br><span class="line">   y=<span class="number">2</span>;</span><br><span class="line">  &#125; </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">reader</span><span class="params">()</span>&#123;</span><br><span class="line"> <span class="type">int</span> r1=y;</span><br><span class="line"> <span class="type">int</span>  r2=x;</span><br><span class="line">&#125;</span><br><span class="line"> &#125;</span><br><span class="line">如果在并发中执行这段代码， 读取Y变量将会得到<span class="number">2</span>这个值。 因为这个写入比写到X变量更晚一些。 但是如果重排序发生了， 那么就能发生对Y变量的写入操作，读取<span class="number">2</span>个变量</span><br><span class="line">的操作紧随其后，而且写入到x这个操作能发生程序的结果可能是r1=<span class="number">2</span> r2=<span class="number">0</span>;</span><br></pre></td></tr></table></figure>
-
-<p>当然不管编译器如果进行 重排序， 也要遵循as-if-serial语义。</p>
-<p>as-if-serial语义的意思是： 无论如何重排序，程序执行的结果应该与代码顺序执行的结果是一样的。 这点我们一般靠java编译器在单线程下做保证。 打个比喻：</p>
-<pre><code>  `int num1=1;  //1`
- 
-
- 
-
-  `int num2=2;  //2`
- 
-
- 
-
-  `int sum=num1+num2;//3`
- 
-</code></pre>
-<p> 在单线程的情况下， 第一 第2 他们的顺序是可以进行重排序的， 但是第三行是不行的.</p>
-<p> 所在在单线程的情况下， 我上面所讲的霹雳啪啦的一大堆理论等于放屁， 别急我们看下面。</p>
-<p>在多个线程访问下， as-if-serial是没有作用的， 按照一般情况，一个线程不会关注其他线程正在做什么。无论其他线程在计算还是在读写， 他都不太关心。 但是等他需要关心</p>
-<p>其他线程在做什么的时候， 就需要做一个事情了， 这个事情就是同步！~</p>
-<p>从java内存模型的角度讲，没有正确同步的含义是</p>
-<p>    1.一个线程中有一个对变量的写操作</p>
-<p>     2.另外一个线程对同一个变量有读操作</p>
-<p>     3. 而且写操作和读操作没有通过同步保证顺序</p>
-<p>当这些规则被违反的时候，我们就说在这个变量上有一个“数据竞争”(data race)。一个有数据竞争的程序就是一个没有正确同步的程序。</p>
-<p>java在语言层面支持可见性和同步的方式是通过：</p>
-<p>  synchronized， volatile. 来实现的。 其中volatile并不能实现可见性。</p>
-<p>我这里说的并没有包括jdk1.5以后加入的并发包。</p>
-<p>JMM对synchornized 有二条规定：</p>
-<p> 1.线程解锁前，必须把共享变量的最新值刷新到主内存中  </p>
-<p>  2.线程加锁时， 将清空工作内存中共享变量的值，从而使用共享变量时需要从</p>
-<p>    主内存中重新读取最新的值。</p>
-<p>所以在synchronized代码块退出的时候就保证了主内存是最新的值， 在加锁时就保证  </p>
-<p> 了加载的是最新的值。 现在大家应该知道synchronized 为啥能同步了吧。</p>
-<p>其实synchornized 可以保证可见性。 应该会有人很奇怪为啥sync锁 还能保证可见性。 下面我来说不可见的原因有哪些。</p>
-<p>在多线程环境下能够造成不可见的原因一般有三点：</p>
-<p> 1. 线程交叉执行。</p>
-<p> 2. 重排序结合线程交叉执行.</p>
-<p>3.共享变量没有及时更新</p>
-<p>首先synchronized 已经保证了线程交叉执行的正确性，  所以第一条没用。 而关于第二条</p>
-<p>嘿嘿嘿，我上面也写了 单线程情况下不管你怎么重排序都要保证结果一致性。 所以也废除。 第三…..  大家应该能猜得到。  </p>
-<p>大家是不是觉得stnchronized 很无敌很牛逼了？  其实他也是有缺点的， 不然不会有大名鼎鼎的java.util.concurrent并发包的出现。</p>
-<p>  我以我的理解说几点sync的坏处， 第一 synchronized粒度太粗， 而且该关键字没有提供当线程没获取到锁的情况下的超时逻辑， 而且。 我们应该知道， 一个只读变量他在多线程坏境下是安全的， 因为他并不会修改变量的值，所以捏。 sync锁应该给我们提供一个对互斥区域的并发读。 但是很遗憾他并没有。。。。</p>
-<p> volatile 这个关键字，他可以实现内存的可见性， 深入点来讲，其实他就是加入了内存</p>
-<p>  屏障和禁止重排序优化来实现的， 所以我上面所说的不完全都是废话….. 当我们</p>
-<p> 对volatile变量执行写操作的时候，会在写操作后加入一条store屏障指令，他会把cpu写缓存器的缓存强制写入的主内存中去。</p>
-<p>当对volatile变量执行读操作时，会在读操作前加入一条load屏障指令，他呢，也会强制cpu读到主内存中去。</p>
-<p> 其实在java内存模型中一共定义了8条操作指令。他们负责和工作内存打交道。具体的指令….. 我忘了…  大家可以查一下。太晚了，很多东西记不起。有空在更新一下。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
     
       
 
@@ -717,7 +522,7 @@
 
 <p>写一个JSP页面， 在里面写一个表单，  我自己的机上把JSP命名为FileInput.jsp, 文件上传表单和普通表单不同</p>
 <p>的是他得声明为MIME类型。 在form属性里面设置 enctype&#x3D;””multipart&#x2F;form-data”  另外对服务器的请求方法为method&#x3D;”post”.  在input标签里面新增一个类型 类型名为 file, 那么视图层就是这样了。</p>
-<p>关于action属性， 填上你的项目的url, 如我的项目url为： 那么我下面的FileInput.jsp对应的就是 &#x2F;zd_web&#x2F;user&#x2F;fileUpload  当然方式不止这一种， 不过这一种简单、<img src="https://img-blog.csdn.net/20160702193755241?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center"></p>
+<p>关于action属性， 填上你的项目的url, 如我的项目url为： 那么我下面的FileInput.jsp对应的就是 &#x2F;zd_web&#x2F;user&#x2F;fileUpload  当然方式不止这一种， 不过这一种简单、<img src="/../../images/img12.jpg" alt="Alt text"></p>
 <p>FileInput.jsp:  </p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ page language=&quot;java&quot; contentType=&quot;text/html; charset=UTF-8&quot;  </span><br><span class="line">       pageEncoding=&quot;UTF-8&quot;%&gt;  </span><br><span class="line">   <span class="meta">&lt;!DOCTYPE <span class="keyword">html</span> <span class="keyword">PUBLIC</span> <span class="string">&quot;-//W3C//DTD HTML 4.01 Transitional//EN&quot;</span> <span class="string">&quot;http://www.w3.org/TR/html4/loose.dtd&quot;</span>&gt;</span>  </span><br><span class="line">   <span class="tag">&lt;<span class="name">html</span>&gt;</span>  </span><br><span class="line">   <span class="tag">&lt;<span class="name">head</span>&gt;</span>  </span><br><span class="line">   <span class="tag">&lt;<span class="name">meta</span> <span class="attr">http-equiv</span>=<span class="string">&quot;Content-Type&quot;</span> <span class="attr">content</span>=<span class="string">&quot;text/html; charset=UTF-8&quot;</span>&gt;</span>  </span><br><span class="line">   <span class="tag">&lt;<span class="name">title</span>&gt;</span>文件上传<span class="tag">&lt;/<span class="name">title</span>&gt;</span>  </span><br><span class="line">   <span class="tag">&lt;/<span class="name">head</span>&gt;</span>  </span><br><span class="line">   <span class="tag">&lt;<span class="name">body</span>&gt;</span>  </span><br><span class="line">       <span class="tag">&lt;<span class="name">form</span> <span class="attr">action</span>=<span class="string">&quot;/zd_web/user/fileUpload&quot;</span> <span class="attr">method</span>=<span class="string">&quot;post&quot;</span> <span class="attr">enctype</span>=<span class="string">&quot;multipart/form-data&quot;</span>&gt;</span>  </span><br><span class="line">           <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;file&quot;</span> <span class="attr">name</span>=<span class="string">&quot;fileUpload&quot;</span> /&gt;</span>  </span><br><span class="line">           <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;submit&quot;</span> <span class="attr">value</span>=<span class="string">&quot;上传&quot;</span> /&gt;</span>  </span><br><span class="line">       <span class="tag">&lt;/<span class="name">form</span>&gt;</span>  </span><br><span class="line">   <span class="tag">&lt;/<span class="name">body</span>&gt;</span>  </span><br><span class="line">   <span class="tag">&lt;/<span class="name">html</span>&gt;</span>  </span><br></pre></td></tr></table></figure>
 
@@ -892,8 +697,7 @@
 <p> url-pattern 就是你要处理的URL， 我这里加上 “&#x2F;“ 意思是处理所有的URL。 （你也可以在Spring中配置&lt;mvc:resources&gt;这个元素）</p>
 <p>接着我们可以指定DispatcherServlet将请求发送给哪个控制器。   所有的请求都要通过DispatcherServlet，然后再由它进行分发， 一般我们将请求发送到HanderMapping上面，那什么是HanderMapping呢，HanderMapping的就是为每个请求找到合适的处理器handler. 那什么是handler呢， 通俗点讲就是标注了@RequestMapping的方法。</p>
 <p> 那么我们怎么确定控制器呢， 在通俗点讲就是在类上面标注@Controller注解进行装饰的class。  这个我在网络上找了一张图：</p>
-<p><img src="https://img-blog.csdn.net/20160629220239979?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center"></p>
-<p>首先，当前端的请求到达的时候， 我们根据我们所编写的请求类进行处理， 这个类必须打上@controller这个注解，以表示它是一个控制器类， 接着我们可以在这个类的方法</p>
+<p><img src="/../../images/img13.jpg" alt="Alt text"><br>首先，当前端的请求到达的时候， 我们根据我们所编写的请求类进行处理， 这个类必须打上@controller这个注解，以表示它是一个控制器类， 接着我们可以在这个类的方法</p>
 <p>里面打上@RequestMapping对请求进行装饰。</p>
 <p>   好的，首先我们先不管那么多概念， 心中得有一个流程的模型， 俗话说，代码能跑起来在想优化的事情。   那么知道这几个概念后，我们可以开始跑一跑这个小项目了，</p>
 <p>首先定义一个表单类， 他用javaScript进行GET方式的提交：</p>
@@ -924,7 +728,7 @@
 <p>在配置文件中配置视图的位置， 前缀比如说这个视图在WEB-INF目录下的jsp目录下， 后缀就是他以.jsp页面结尾的后缀。 当然视图还有多种方法， 这里我给出的是最简单暴力的方法。   </p>
 <p> 那么整个入门项目貌似就完成了，下面我给出在我机子上面的运行截图：</p>
 <p>   </p>
-<p><img src="https://img-blog.csdn.net/20160629223342632?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">  </p>
+<p><img src="/../../images/img14.jpg" alt="Alt text"></p>
 <p>   </p>
 <p>最近很忙，所以写的很不好， 望各位多加指正， 关于Spring的其他(对REST的支持，权限框架， 事务管理， IOC容器)。 我会等有空后跟大家分享。对于书籍，</p>
 <p>Spring in action 和Spring3.0x企业实战 这2本书我觉得很好呢。 嘿嘿</p>
@@ -1273,7 +1077,7 @@
 <p>比如queue1中有三个数据c b  a.  那么我们把除开最后一个c以外的2个元素 b, a元素移到queue2.  如果这个时候用户出栈的话，</p>
 <p>那么请问是不是就只有c了？  c就是栈顶。 c pop出去， 接着如果在执行出栈的话，我们在把queue2中除最后一个元素的元素</p>
 <p>移到queue1 请问是不是只有b了？  那么执行pop就是出去b。   </p>
-<p><img src="https://img-blog.csdn.net/20160519004516413?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">  </p>
+<p><img src="/../../images/img15.jpg" alt="Alt text"></p>
 <p>下面给出Java实现代码:</p>
 <p>   </p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Queue;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Test_Queue</span> &#123;</span><br><span class="line">    Queue&lt;integer&gt; queue1 = <span class="keyword">new</span> <span class="title class_">ArrayDeque</span>&lt;&gt;();</span><br><span class="line">    Queue&lt;integer&gt; queue2 = <span class="keyword">new</span> <span class="title class_">ArrayDeque</span>&lt;&gt;();</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">push</span><span class="params">(<span class="type">int</span> node)</span> &#123;</span><br><span class="line">        <span class="comment">//两个栈都为空时，优先考虑queue1</span></span><br><span class="line">        <span class="keyword">if</span> (queue1.isEmpty()&amp;&amp;queue2.isEmpty()) &#123;</span><br><span class="line">            queue1.add(node);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        <span class="comment">//如果queue1为空，queue2有元素，直接放入queue2</span></span><br><span class="line">        <span class="keyword">if</span> (queue1.isEmpty()) &#123;</span><br><span class="line">            queue2.add(node);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        <span class="keyword">if</span> (queue2.isEmpty()) &#123;</span><br><span class="line">            queue1.add(node);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">pop</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="comment">//两个栈都为空时，没有元素可以弹出</span></span><br><span class="line">        <span class="keyword">if</span> (queue1.isEmpty()&amp;&amp;queue2.isEmpty()) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">Exception</span>(stack is empty);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//如果queue1为空，queue2有元素， 将queue2的元素依次放入queue1中，直到最后一个元素，我们弹出。</span></span><br><span class="line">        <span class="keyword">if</span> (queue1.isEmpty()) &#123;</span><br><span class="line">            <span class="keyword">while</span> (queue2.size()&gt;<span class="number">1</span>) &#123;</span><br><span class="line">                queue1.add(queue2.poll());</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> queue2.poll();</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        <span class="keyword">if</span> (queue2.isEmpty()) &#123;</span><br><span class="line">            <span class="keyword">while</span> (queue1.size()&gt;<span class="number">1</span>) &#123;</span><br><span class="line">                queue2.add(queue1.poll());</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> queue1.poll();</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        <span class="keyword">return</span> (Integer) <span class="literal">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">         <span class="type">Test_Queue</span>   <span class="variable">test_Queue</span> <span class="operator">=</span> <span class="keyword">new</span>  <span class="title class_">Test_Queue</span> ();</span><br><span class="line">        test_Queue.push(<span class="number">9</span>);</span><br><span class="line">        test_Queue.push(<span class="number">8</span>);</span><br><span class="line">        test_Queue.push(<span class="number">7</span>);</span><br><span class="line">        test_Queue.push(<span class="number">6</span>);</span><br><span class="line">        System.out.println(test_Queue.pop());</span><br><span class="line">        System.out.println(test_Queue.pop());</span><br><span class="line">        demo08.push(<span class="number">5</span>);</span><br><span class="line">        System.out.println(test_Queue.pop());</span><br><span class="line">        System.out.println(test_Queue.pop());</span><br><span class="line">        System.out.println(dtest_Queue.pop());</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
@@ -1648,20 +1452,15 @@
 </li>
 </ol>
 <p>          比较两个多项式a1n+b1和a2n2+b2n+c2的值（n取正整数）可以得出结论：n的最高次指数是最主要的决定因素，常数项、低次幂项和系数都是次要的。比如100n+1和n2+1，虽然后者的系数小，当n较小时前者的值较大，但是当n&gt;100时，后者的值就远远大于前者了。如果同一个问题可以用两种算法解决，其中一种算法的时间复杂度为线性函数，另一种算法的时间复杂度为二次函数，当问题的输入长度n足够大时，前者明显优于后者。因此我们可以用一种更粗略的方式表示算法的时间复杂度，把系数和低次幂项都省去，线性函数记作Θ(n)，二次函数记作Θ(n2)。</p>
-<p>Θ(g(n))表示和g(n)同一量级的一类函数，例如所有的二次函数f(n)都和g(n)&#x3D;n2属于同一量级，都可以用Θ(n2)来表示，甚至有些不是二次函数的也和n2属于同一量级，例如2n2+3lgn。“同一量级”这个概念可以用下图来说明（该图出自<a target="_blank" rel="noopener" href="http://learn.akae.cn/media/bi01.html#bibli.algorithm" title="Introduction to Algorithms">[算法导论]</a>）：</p>
-<p>图 11.2. Θ-notation</p>
-<p><img src="http://learn.akae.cn/media/images/sortsearch.theta.png" alt="Θ-notation"></p>
+<p>Θ(g(n))表示和g(n)同一量级的一类函数，例如所有的二次函数f(n)都和g(n)&#x3D;n2属于同一量级，都可以用Θ(n2)来表示，甚至有些不是二次函数的也和n2属于同一量级，例如2n2+3lgn。（该图出自<a target="_blank" rel="noopener" href="http://learn.akae.cn/media/bi01.html#bibli.algorithm" title="Introduction to Algorithms">[算法导论]</a>）：</p>
 <p>         如果可以找到两个正的常数c1和c2，使得n足够大的时候（也就是n≥n0的时候）f(n)总是夹在c1g(n)和c2g(n)之间，就说f(n)和g(n)是同一量级的，f(n)就可以用Θ(g(n))来表示。</p>
-<p>以二次函数为例，比如1&#x2F;2n2-3n，要证明它是属于Θ(n2)这个集合的，我们必须确定c1、c2和n0，这些常数不随n改变，并且当n≥n0以后，c1n2≤1&#x2F;2n2-3n≤c2n2总是成立的。为此我们从不等式的每一边都除以n2，得到c1≤1&#x2F;2-3&#x2F;n≤c2。见下图：</p>
-<p>图 11.3. 1&#x2F;2-3&#x2F;n</p>
-<p><img src="http://learn.akae.cn/media/images/sortsearch.fn0.png" alt="1/2-3/n"></p>
+<p>以二次函数为例，比如1&#x2F;2n2-3n，要证明它是属于Θ(n2)这个集合的，我们必须确定c1、c2和n0，这些常数不随n改变，并且当n≥n0以后，c1n2≤1&#x2F;2n2-3n≤c2n2总是成立的。为此我们从不等式的每一边都除以n2，得到c1≤1&#x2F;2-3&#x2F;n≤c2。</p>
 <p>        这样就很容易看出来，无论n取多少，该函数一定小于1&#x2F;2，因此c2=1&#x2F;2，当n&#x3D;6时函数值为0，n&gt;6时该函数都大于0，可以取n0=7，c1=1&#x2F;14，这样当n≥n0时都有1&#x2F;2-3&#x2F;n≥c1。通过这个证明过程可以得出结论，当n足够大时任何an2+bn+c都夹在c1n2和c2n2之间，相对于n2项来说bn+c的影响可以忽略，a可以通过选取合适的c1、c2来补偿。</p>
 <p>        几种常见的时间复杂度函数按数量级从小到大的顺序依次是：Θ(lgn)，Θ(sqrt(n))，Θ(n)，Θ(nlgn)，Θ(n2)，Θ(n3)，Θ(2n)，Θ(n!)。其中，lgn通常表示以10为底n的对数，但是对于Θ-notation来说，Θ(lgn)和Θ(log2n)并无区别（想一想这是为什么），在算法分析中lgn通常表示以2为底n的对数。可是什么算法的时间复杂度里会出现lgn呢？回顾插入排序的时间复杂度分析，无非是循环体的执行时间乘以循环次数，只有加和乘运算，怎么会出来lg呢？下一节归并排序的时间复杂度里面就有lg，请读者留心lg运算是从哪出来的。</p>
 <p>         除了Θ-notation之外，表示算法的时间复杂度常用的还有一种Big-O notation。我们知道插入排序在最坏情况和平均情况下时间复杂度是Θ(n2)，在最好情况下是Θ(n)，数量级比Θ(n2)要小，那么总结起来在各种情况下插入排序的时间复杂度是O(n2)。Θ的含义和“等于”类似，而大O的含义和“小于等于”类似。受内存管理机影响，指令的执行时间不一定是常数，但执行时间的上界（Upper Bound）肯定是常数，我们这里假设语句的执行时间是常数只是一个粗略估计。</p>
 <p>** 三、常用的算法的时间复杂度和空间复杂度**</p>
 <table width="587" border="1" style="padding:0px; margin:0px auto; height:1px"><tbody style="padding:0px; margin:0px"><tr style="padding:0px; margin:0px"><td width="587" height="37" style="padding:0px; margin:0px"><p align="center" style="padding-top:0px; padding-bottom:15px; margin-top:0px; margin-bottom:0px"><span style="padding:0px; margin:0px"><span style="font-size:14px">排序法</span></span></p></td><td width="587" height="37" style="padding:0px; margin:0px"><span style="padding:0px; margin:0px"><span style="font-size:14px">最差时间分析</span></span></td><td width="587" height="37" style="padding:0px; margin:0px"><span style="padding:0px; margin:0px"><span style="font-size:14px">平均时间复杂度</span></span></td><td width="587" height="37" style="padding:0px; margin:0px"><span style="padding:0px; margin:0px"><span style="font-size:14px">稳定度</span></span></td><td width="587" height="37" style="padding:0px; margin:0px"><span style="padding:0px; margin:0px"><span style="font-size:14px">空间复杂度</span></span></td></tr><tr style="padding:0px; margin:0px"><td align="center" width="587" height="42" style="padding:0px; margin:0px"><span style="padding:0px; margin:0px"><span style="font-size:14px">冒泡排序</span></span></td><td align="center" width="587" height="42" style="padding:0px; margin:0px"><span style="padding:0px; margin:0px"><span style="font-size:14px">O(n<sup style="padding:0px; margin:0px">2</sup>)</span></span></td><td align="center" width="587" height="42" style="padding:0px; margin:0px"><span style="padding:0px; margin:0px"><span style="font-size:14px">O(n<sup style="padding:0px; margin:0px">2</sup>)</span></span></td><td align="center" width="587" height="42" style="padding:0px; margin:0px"><span style="padding:0px; margin:0px"><span style="font-size:14px">稳定</span></span></td><td align="center" width="587" height="42" style="padding:0px; margin:0px"><span style="padding:0px; margin:0px"><span style="font-size:14px">O(1)</span></span></td></tr><tr style="padding:0px; margin:0px"><td align="center" width="587" height="39" style="padding:0px; margin:0px"><span style="padding:0px; margin:0px"><span style="font-size:14px">快速排序</span></span></td><td align="center" width="587" height="39" style="padding:0px; margin:0px"><span style="padding:0px; margin:0px"><span style="font-size:14px">O(n<sup style="padding:0px; margin:0px">2</sup>)</span></span></td><td align="center" width="587" height="39" style="padding:0px; margin:0px"><span style="padding:0px; margin:0px"><span style="font-size:14px">O(n*log<sub style="padding:0px; margin:0px">2</sub>n)</span></span></td><td align="center" width="587" height="39" style="padding:0px; margin:0px"><span style="padding:0px; margin:0px"><span style="font-size:14px">不稳定</span></span></td><td align="center" width="587" height="39" style="padding:0px; margin:0px"><span style="padding:0px; margin:0px"><span style="font-size:14px">O(log<sub style="padding:0px; margin:0px">2</sub>n)~O(n)</span></span></td></tr><tr style="padding:0px; margin:0px"><td align="center" width="587" height="39" style="padding:0px; margin:0px"><span style="padding:0px; margin:0px"><span style="font-size:14px">选择排序</span></span></td><td align="center" width="587" height="39" style="padding:0px; margin:0px"><span style="padding:0px; margin:0px"><span style="font-size:14px">O(n<sup style="padding:0px; margin:0px">2</sup>)</span></span></td><td align="center" width="587" height="39" style="padding:0px; margin:0px"><span style="padding:0px; margin:0px"><span style="font-size:14px">O(n<sup style="padding:0px; margin:0px">2</sup>)</span></span></td><td align="center" width="587" height="39" style="padding:0px; margin:0px"><span style="padding:0px; margin:0px"><span style="font-size:14px">稳定</span></span></td><td align="center" width="587" height="39" style="padding:0px; margin:0px"><span style="padding:0px; margin:0px"><span style="font-size:14px">O(1)</span></span></td></tr><tr style="padding:0px; margin:0px"><td align="center" width="587" height="39" style="padding:0px; margin:0px"><span style="padding:0px; margin:0px"><span style="font-size:14px">二叉树排序</span></span></td><td align="center" width="587" height="39" style="padding:0px; margin:0px"><span style="padding:0px; margin:0px"><span style="font-size:14px">O(n<sup style="padding:0px; margin:0px">2</sup>)</span></span></td><td align="center" width="587" height="39" style="padding:0px; margin:0px"><span style="padding:0px; margin:0px"><span style="font-size:14px">O(n*log<sub style="padding:0px; margin:0px">2</sub>n)</span></span></td><td align="center" width="587" height="39" style="padding:0px; margin:0px"><span style="padding:0px; margin:0px"><span style="font-size:14px">不一顶</span></span></td><td align="center" width="587" height="39" style="padding:0px; margin:0px"><span style="padding:0px; margin:0px"><span style="font-size:14px">O(n)</span></span></td></tr><tr style="padding:0px; margin:0px"><td align="center" width="587" height="39" style="padding:0px; margin:0px"><p align="center" style="padding-top:0px; padding-bottom:15px; margin-top:0px; margin-bottom:0px"><span style="padding:0px; margin:0px"><span style="font-size:14px">插入排序</span></span></p></td><td align="center" width="587" height="39" style="padding:0px; margin:0px"><span style="padding:0px; margin:0px"><span style="font-size:14px">O(n<sup style="padding:0px; margin:0px">2</sup>)</span></span></td><td align="center" width="587" height="39" style="padding:0px; margin:0px"><span style="padding:0px; margin:0px"><span style="font-size:14px">O(n<sup style="padding:0px; margin:0px">2</sup>)</span></span></td><td align="center" width="587" height="39" style="padding:0px; margin:0px"><span style="padding:0px; margin:0px"><span style="font-size:14px">稳定</span></span></td><td align="center" width="587" height="39" style="padding:0px; margin:0px"><span style="padding:0px; margin:0px"><span style="font-size:14px">O(1)</span></span></td></tr><tr style="padding:0px; margin:0px"><td align="center" width="587" height="39" style="padding:0px; margin:0px"><span style="padding:0px; margin:0px"><span style="font-size:14px">堆排序</span></span></td><td align="center" width="587" height="39" style="padding:0px; margin:0px"><span style="padding:0px; margin:0px"><span style="font-size:14px">O(n*log<sub style="padding:0px; margin:0px">2</sub>n)</span></span></td><td align="center" width="587" height="39" style="padding:0px; margin:0px"><span style="padding:0px; margin:0px"><span style="font-size:14px">O(n*log<sub style="padding:0px; margin:0px">2</sub>n)</span></span></td><td align="center" width="587" height="39" style="padding:0px; margin:0px"><span style="padding:0px; margin:0px"><span style="font-size:14px">不稳定</span></span></td><td align="center" width="587" height="39" style="padding:0px; margin:0px"><span style="padding:0px; margin:0px"><span style="font-size:14px">O(1)</span></span></td></tr><tr style="padding:0px; margin:0px"><td align="center" width="587" height="39" style="padding:0px; margin:0px"><span style="padding:0px; margin:0px"><span style="font-size:14px">希尔排序</span></span></td><td align="center" width="587" height="39" style="padding:0px; margin:0px"><span style="padding:0px; margin:0px"><span style="font-size:14px">O</span></span></td><td align="center" width="587" height="39" style="padding:0px; margin:0px"><span style="padding:0px; margin:0px"><span style="font-size:14px">O</span></span></td><td align="center" width="587" height="39" style="padding:0px; margin:0px"><span style="padding:0px; margin:0px"><span style="font-size:14px">不稳定</span></span></td><td align="center" width="587" height="39" style="padding:0px; margin:0px"><span style="padding:0px; margin:0px"><span style="font-size:14px">O(1)<br><br></span></span></td></tr></tbody></table>
 
-<p>以上博文转载至<a target="_blank" rel="noopener" href="http://blog.csdn.net/wangjinyu501/article/details/8209492">http://blog.csdn.net/wangjinyu501/article/details/8209492</a></p>
 
           
         
@@ -2008,11 +1807,174 @@
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2015/10/25/kmp%E7%AE%97%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="周杰">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2015/10/25/kmp%E7%AE%97%E6%B3%95/" itemprop="url">kmp算法</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-10-25T19:06:05+08:00">
+                2015-10-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%92%8C%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构和算法</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <span id="more"></span>
+
+<p>如有一串字符”a b  c  d “ 我想知道里面是否包含字符 c d 用传统的暴力算法 我们可以这样解：</p>
+<p>java代码:</p>
+<p>public static int  char_next(char [] str, char str_s[])<br>{<!-- \--><br> int i&#x3D;0;  &#x2F;&#x2F;主串下标<br> int j&#x3D;0;   &#x2F;&#x2F;子串下标<br> while(str[i]&lt;&#x3D;str.length &amp;&amp; str_s[j]&lt;&#x3D;str_s.length)<br> {<!-- \--><br> if(str[i+j]&#x3D;&#x3D;str_s[j])<br> {<!-- \-->  </p>
+<p> j++;<br> }<br> else<br> {<!-- \--><br>         i++;<br> j&#x3D;0;<br> }<br> }<br> return i-1;  </p>
+<p>}  </p>
+<p>  当发生失配后， 也就是str[i+j]!&#x3D;str_s[j]后那么子串发生失配了， 传统的算法就是让j（子串）回溯到开始位置</p>
+<p>   主串i+1 重新进行匹配。 这种算法虽然通熟易懂逻辑清晰但是效率堪忧。 </p>
+<p>下面给出我对KMP算法代码和理解，它是一种线性时间查找的算法，一开始接触时非常难懂。其实对于kmp算法，理解了它的next数组就差不多理解了怎个算法</p>
+<p>  kmp算法通过移动next数组在失配后重新进行匹配</p>
+<p>import java.util.*;  </p>
+<p>public class kmp {<!-- \-->  </p>
+<p>public static int [] getkmp_next(char str[])<br>{<!-- \--><br>int j&#x3D;-1;<br>int k&#x3D;0;  </p>
+<p>int next[]&#x3D;new int [6];<br>next[0]&#x3D;j;  </p>
+<p>while(k&lt;&#x3D;str.length-1)<br>if(j&#x3D;&#x3D;-1 || str[j]&#x3D;&#x3D;str[k])<br>{<!-- \--><br>j++;<br>k++;  <br>next[k]&#x3D;j; &#x2F;&#x2F;存入next数组 j代表next值 k代表下标  </p>
+<p>}<br>else  &#x2F;&#x2F;当发生失配后重新开始匹配<br>j&#x3D;next[j];  <br>return next;<br>}<br>public static void main(String[]args)<br>{<!-- \--><br>char []str&#x3D;{‘a’,’b’,’c’,’d’}; &#x2F;&#x2F;主串   </p>
+<p>char []str_s&#x3D;{‘c’,’d’};  &#x2F;&#x2F;模式串<br>int p&#x3D;str_s.length;<br>int r;<br>int next[]&#x3D;getkmp_next(str_s); &#x2F;&#x2F;求子串next值<br>int i&#x3D;0; &#x2F;&#x2F;主串下标<br>int j&#x3D;-1;  &#x2F;&#x2F;子串下标  </p>
+<p>while(i&lt;&#x3D;str.length-1 &amp;&amp;j&lt;&#x3D;str_s.length-1)<br>if(j&#x3D;&#x3D;-1 || str[i]&#x3D;&#x3D;str_s[j])  <br>{<!-- \--><br>i++;j++;<br>}<br>else  &#x2F;&#x2F;失配后j根据next的值决定子串移动位置<br>j&#x3D;next[j];  </p>
+<p>if(j&#x3D;&#x3D;p)<br>{<!-- \--><br>r&#x3D;i-j;<br>System.out.println(“从第”+r+”个位置开始匹配”);<br>}<br>else<br>System.out.println(“找不到匹配位置”);  </p>
+<p>}<br>}  </p>
+<p>注释中是我对KMP算法的理解，若有不对之处还望各位大神轻喷。小弟一定改正。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/">&lt;i class&#x3D;&quot;fa fa-angle-left&quot;&gt;&lt;&#x2F;i&gt;</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/">&lt;i class&#x3D;&quot;fa fa-angle-right&quot;&gt;&lt;&#x2F;i&gt;</a>
+    <a class="extend prev" rel="prev" href="/">&lt;</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/">&gt;</a>
   </nav>
 
 
@@ -2056,9 +2018,9 @@
             
               <div class="site-state-item site-state-posts">
               
-                <a href="/archives">
+                <a href="/archives/%7C%7C%20archive">
               
-                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-count">21</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2117,7 +2079,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; 2017 &mdash; <span itemprop="copyrightYear">2023</span>
+        <div class="copyright">&copy; 2016 &mdash; <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

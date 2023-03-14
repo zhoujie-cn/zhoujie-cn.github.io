@@ -86,15 +86,15 @@
 <meta property="og:site_name" content="周杰">
 <meta property="og:description" content="今天一位朋友在用迭代器时很郁闷为什么会会报Java.util.ConcurrentModificationExceptiond异常， 于是写下这篇博客，想详细的讲讲Java里面  的迭代器.            Iterator简单的来说就是遍历， 遍历什么？ 遍历集合元素等.             Iterator接口共有四个方法： 12345678public interface It">
 <meta property="og:locale">
-<meta property="og:image" content="https://img-blog.csdn.net/20170108154541837?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaGVsbG93b3JkYXBp/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
-<meta property="og:image" content="https://img-blog.csdn.net/20170108155343731?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaGVsbG93b3JkYXBp/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
-<meta property="og:image" content="https://img-blog.csdn.net/20170108160120875?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaGVsbG93b3JkYXBp/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:image" content="http://example.com/images/img8.jpg">
+<meta property="og:image" content="http://example.com/images/img9.jpg">
+<meta property="og:image" content="http://example.com/images/img10.jpg">
 <meta property="article:published_time" content="2017-01-08T08:08:26.000Z">
-<meta property="article:modified_time" content="2023-03-14T06:46:35.702Z">
+<meta property="article:modified_time" content="2023-03-14T08:53:21.507Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="java 迭代器 异常处理">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://img-blog.csdn.net/20170108154541837?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaGVsbG93b3JkYXBp/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta name="twitter:image" content="http://example.com/images/img8.jpg">
 
 
 
@@ -211,6 +211,16 @@
               <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
             
             分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
           </a>
         </li>
       
@@ -353,13 +363,13 @@
 <p>这段代码的意思是  获得List对象的迭代器，  然后通过迭代器来遍历List对象内保存的元素.</p>
 <p>接着我们就可以调用他的 hasNext方法和next方法去操作他了.</p>
 <p>接着贴出一段错误的代码这是在我工作机上面测试的代码 jdk是1.8 (当然我相信以前的jdk结果应该也是这样):</p>
-<p>  <img src="https://img-blog.csdn.net/20170108154541837?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaGVsbG93b3JkYXBp/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center"></p>
+<p><img src="/../../images/img8.jpg" alt="Alt text"></p>
 <p> </p>
 <p>那么为什么二种删除方式一个有错一个没错呢(这个问题难倒了工作三年的一个朋友).  经过刚刚的测试，我们发现用迭代器本身删除是可以的，但是在迭代器中</p>
 <p>对list本身进行删除就不行了， 对于这种莫名其妙的问题，我们从源码入手， 首先根据上面的我们先看看ArrayList他是怎么返回Iterator实例的，最终源码如下：</p>
-<p><img src="https://img-blog.csdn.net/20170108155343731?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaGVsbG93b3JkYXBp/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">  </p>
+<p><img src="/../../images/img9.jpg" alt="Alt text"></p>
 <p> 在ArrayList类中有一个私有类Private Itr 我们注意到expectedModCount这个字段，他的初始值是等于modCount的。 那modCount又是干啥的呢 最直接的。 看源码：</p>
-<p> <img src="https://img-blog.csdn.net/20170108160120875?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaGVsbG93b3JkYXBp/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center"></p>
+<p><img src="/../../images/img10.jpg" alt="Alt text"></p>
 <p>我们从源码可以对集合的每一次 add &#x2F; remove 都会触发一下这个字段，而上面Itr的remove 不管在删除还是添加都会触发一个方法(csdn上截图太麻烦我直接写了 )   checkForComodification();这个方法， 大家可以看看上面的截图而这个 checkForComodification();方法中只有一个功能</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (modCount != expectedModCount)</span><br><span class="line">               <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">ConcurrentModificationException</span>();</span><br></pre></td></tr></table></figure>
 
@@ -475,9 +485,9 @@
             
               <div class="site-state-item site-state-posts">
               
-                <a href="/archives">
+                <a href="/archives/%7C%7C%20archive">
               
-                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-count">21</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -536,7 +546,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; 2017 &mdash; <span itemprop="copyrightYear">2023</span>
+        <div class="copyright">&copy; 2016 &mdash; <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

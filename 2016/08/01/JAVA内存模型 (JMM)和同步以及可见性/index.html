@@ -86,13 +86,13 @@
 <meta property="og:site_name" content="周杰">
 <meta property="og:description" content="可见性：    一般来说，我们对可见性的定义是一个线程对共享变量值的修改，能够被其他线程 及时的看到，那么这个时候我们一般称这个变量是线程间可见的。 那么什么是共享变量？       一般来讲，如果一个变量在多个线程的工作内存中都存在有副本，那么这个     变量就是这几个线程的共享变量。  那么啥是工作内存呢？ 这个时候就是我们的JMM登场了。 Java内存模型（JMM）。描述了Java程序">
 <meta property="og:locale">
-<meta property="og:image" content="https://img-blog.csdn.net/20160801233853790?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:image" content="http://example.com/images/img11.jpg">
 <meta property="article:published_time" content="2016-08-01T15:42:24.000Z">
-<meta property="article:modified_time" content="2023-03-14T06:46:35.702Z">
+<meta property="article:modified_time" content="2023-03-14T08:55:15.145Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="java 线程">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://img-blog.csdn.net/20160801233853790?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta name="twitter:image" content="http://example.com/images/img11.jpg">
 
 
 
@@ -209,6 +209,16 @@
               <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
             
             分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
           </a>
         </li>
       
@@ -348,7 +358,7 @@
 <p>降低共享内存在总线上的通讯。来提高cpu性能。</p>
 <p>在处理器层面上，内存模型定义了一个充要条件，“让当前的处理器可以看到其他处理器写入到内存的数据”  以及 “其他处理器可以看到当前处理器写入到内存的数据”。</p>
 <p>有些处理器有很强的内存模型，能够让所有的处理器在任何时候任何指定的内存地址上都可以看到完全相同的值，而有的处理器内存模型较弱，在这种处理器中，必须需用内存屏障。来刷新本地处理器缓存并使本地处理器无效。目的是为了让当前处理器能够看到其他处理器的写操作或让其他处理器看到当前处理器的写操作。</p>
-<p>在JMM中所有的变量都存储在主内存中，且每个线程都有自己独立的工作内存，里面保存着该线程使用到的变量的副本。（其实就是主内存的一份拷贝）<br><img src="https://img-blog.csdn.net/20160801233853790?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">  </p>
+<p>在JMM中所有的变量都存储在主内存中，且每个线程都有自己独立的工作内存，里面保存着该线程使用到的变量的副本。（其实就是主内存的一份拷贝）<br><img src="/../../images/img11.jpg" alt="Alt text"></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Class Reordering&#123;</span><br><span class="line">  <span class="type">int</span> x=<span class="number">0</span>, y=<span class="number">0</span>;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">writer</span><span class="params">()</span>&#123;</span><br><span class="line">   x=<span class="number">1</span>;</span><br><span class="line">   y=<span class="number">2</span>;</span><br><span class="line">  &#125; </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">reader</span><span class="params">()</span>&#123;</span><br><span class="line"> <span class="type">int</span> r1=y;</span><br><span class="line"> <span class="type">int</span>  r2=x;</span><br><span class="line">&#125;</span><br><span class="line"> &#125;</span><br><span class="line">如果在并发中执行这段代码， 读取Y变量将会得到<span class="number">2</span>这个值。 因为这个写入比写到X变量更晚一些。 但是如果重排序发生了， 那么就能发生对Y变量的写入操作，读取<span class="number">2</span>个变量</span><br><span class="line">的操作紧随其后，而且写入到x这个操作能发生程序的结果可能是r1=<span class="number">2</span> r2=<span class="number">0</span>;</span><br></pre></td></tr></table></figure>
 
 <p>当然不管编译器如果进行 重排序， 也要遵循as-if-serial语义。</p>
@@ -506,9 +516,9 @@
             
               <div class="site-state-item site-state-posts">
               
-                <a href="/archives">
+                <a href="/archives/%7C%7C%20archive">
               
-                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-count">21</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -567,7 +577,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; 2017 &mdash; <span itemprop="copyrightYear">2023</span>
+        <div class="copyright">&copy; 2016 &mdash; <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

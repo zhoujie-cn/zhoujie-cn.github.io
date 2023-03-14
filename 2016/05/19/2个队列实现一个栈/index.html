@@ -86,13 +86,13 @@
 <meta property="og:site_name" content="周杰">
 <meta property="og:description" content="在算法导论有一道非常有趣的证明题， 利用2个队列实现一个栈，   队列和栈最大的区别就是队列满足FIFO(先进先出)，他有2个操作的地方，一个是队头一个是队尾， 而栈满足的是先进后出，他只有一个操作的地方就是栈顶。 我们定义 2 个队列 queue1 queue2  用于存放进”栈” 用queue2临时存 放queue1的数据。 那么实现他的方式就比较明显了，  首先我们先抽象的想象一下，我们">
 <meta property="og:locale">
-<meta property="og:image" content="https://img-blog.csdn.net/20160519004516413?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:image" content="http://example.com/images/img15.jpg">
 <meta property="article:published_time" content="2016-05-18T16:47:11.000Z">
-<meta property="article:modified_time" content="2023-03-14T06:46:35.703Z">
+<meta property="article:modified_time" content="2023-03-14T09:09:05.356Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="算法 java 栈 算法导论">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://img-blog.csdn.net/20160519004516413?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta name="twitter:image" content="http://example.com/images/img15.jpg">
 
 
 
@@ -209,6 +209,16 @@
               <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
             
             分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
           </a>
         </li>
       
@@ -344,7 +354,7 @@
 <p>比如queue1中有三个数据c b  a.  那么我们把除开最后一个c以外的2个元素 b, a元素移到queue2.  如果这个时候用户出栈的话，</p>
 <p>那么请问是不是就只有c了？  c就是栈顶。 c pop出去， 接着如果在执行出栈的话，我们在把queue2中除最后一个元素的元素</p>
 <p>移到queue1 请问是不是只有b了？  那么执行pop就是出去b。   </p>
-<p><img src="https://img-blog.csdn.net/20160519004516413?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">  </p>
+<p><img src="/../../images/img15.jpg" alt="Alt text"></p>
 <p>下面给出Java实现代码:</p>
 <p>   </p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Queue;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Test_Queue</span> &#123;</span><br><span class="line">    Queue&lt;integer&gt; queue1 = <span class="keyword">new</span> <span class="title class_">ArrayDeque</span>&lt;&gt;();</span><br><span class="line">    Queue&lt;integer&gt; queue2 = <span class="keyword">new</span> <span class="title class_">ArrayDeque</span>&lt;&gt;();</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">push</span><span class="params">(<span class="type">int</span> node)</span> &#123;</span><br><span class="line">        <span class="comment">//两个栈都为空时，优先考虑queue1</span></span><br><span class="line">        <span class="keyword">if</span> (queue1.isEmpty()&amp;&amp;queue2.isEmpty()) &#123;</span><br><span class="line">            queue1.add(node);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        <span class="comment">//如果queue1为空，queue2有元素，直接放入queue2</span></span><br><span class="line">        <span class="keyword">if</span> (queue1.isEmpty()) &#123;</span><br><span class="line">            queue2.add(node);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        <span class="keyword">if</span> (queue2.isEmpty()) &#123;</span><br><span class="line">            queue1.add(node);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">pop</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="comment">//两个栈都为空时，没有元素可以弹出</span></span><br><span class="line">        <span class="keyword">if</span> (queue1.isEmpty()&amp;&amp;queue2.isEmpty()) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">Exception</span>(stack is empty);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//如果queue1为空，queue2有元素， 将queue2的元素依次放入queue1中，直到最后一个元素，我们弹出。</span></span><br><span class="line">        <span class="keyword">if</span> (queue1.isEmpty()) &#123;</span><br><span class="line">            <span class="keyword">while</span> (queue2.size()&gt;<span class="number">1</span>) &#123;</span><br><span class="line">                queue1.add(queue2.poll());</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> queue2.poll();</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        <span class="keyword">if</span> (queue2.isEmpty()) &#123;</span><br><span class="line">            <span class="keyword">while</span> (queue1.size()&gt;<span class="number">1</span>) &#123;</span><br><span class="line">                queue2.add(queue1.poll());</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> queue1.poll();</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        <span class="keyword">return</span> (Integer) <span class="literal">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">         <span class="type">Test_Queue</span>   <span class="variable">test_Queue</span> <span class="operator">=</span> <span class="keyword">new</span>  <span class="title class_">Test_Queue</span> ();</span><br><span class="line">        test_Queue.push(<span class="number">9</span>);</span><br><span class="line">        test_Queue.push(<span class="number">8</span>);</span><br><span class="line">        test_Queue.push(<span class="number">7</span>);</span><br><span class="line">        test_Queue.push(<span class="number">6</span>);</span><br><span class="line">        System.out.println(test_Queue.pop());</span><br><span class="line">        System.out.println(test_Queue.pop());</span><br><span class="line">        demo08.push(<span class="number">5</span>);</span><br><span class="line">        System.out.println(test_Queue.pop());</span><br><span class="line">        System.out.println(test_Queue.pop());</span><br><span class="line">        System.out.println(dtest_Queue.pop());</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
@@ -455,9 +465,9 @@
             
               <div class="site-state-item site-state-posts">
               
-                <a href="/archives">
+                <a href="/archives/%7C%7C%20archive">
               
-                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-count">21</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -516,7 +526,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; 2017 &mdash; <span itemprop="copyrightYear">2023</span>
+        <div class="copyright">&copy; 2016 &mdash; <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

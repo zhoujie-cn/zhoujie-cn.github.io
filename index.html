@@ -206,6 +206,16 @@
           </a>
         </li>
       
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
 
       
     </ul>
@@ -636,7 +646,7 @@
 <p>        默认情况下SitePreferenceHandlerInterceptor会默认通过CookieSitePreferenceRepository将用户选项存入Cookie</p>
 <p>    以下是SitePreferenceHandlerInterceptor代码，其中默认的构造函数会创建一个CookieSitePreferenceRepository，而CookieSitePreferenceRepository中的构造函数</p>
 <p>   会setCookieName将用户选项存入Cookie, 当然你可以插入另外一个Site偏好处理程序.  </p>
-<p>     <img src="https://img-blog.csdn.net/20171031110255776?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaGVsbG93b3JkYXBp/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">  </p>
+<p><img src="/../../images/img2.jpg" alt="Alt text"></p>
 <p>     </p>
 <p>2.4  通过以上配置，可以通过以下代码或者用户首选项：  </p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">SitePreference</span> <span class="variable">sitePreference</span> <span class="operator">=</span> SitePreferenceUtils.getCurrentSitePreference(servletRequest);</span><br></pre></td></tr></table></figure>
@@ -660,125 +670,6 @@
 
 <p>  你也可以指定根目录在urlPath下面在加一个构造函数即可。 需要注意的是他们都会将设置的值默认注入到Cookie首选项中，并且他们在移动站点和正常站点是共享的。</p>
 
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2017/08/21/hello-world/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="周杰">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/08/21/hello-world/" itemprop="url">Hello World</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-21T00:00:00+08:00">
-                2017-08-21
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            
           
         
       
@@ -1080,7 +971,7 @@
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> &quot;U_PERMISSION&quot; </span><br><span class="line">   (	&quot;ID&quot; NUMBER(<span class="number">20</span>,<span class="number">0</span>), </span><br><span class="line">	&quot;URL&quot; VARCHAR2(<span class="number">256</span> BYTE), </span><br><span class="line">	&quot;NAME&quot; VARCHAR2(<span class="number">50</span> BYTE), </span><br><span class="line">	&quot;PARENT&quot; NUMBER(<span class="number">20</span>,<span class="number">0</span>)</span><br><span class="line">   ) </span><br></pre></td></tr></table></figure>
 
 <p>在上表中 id表示当前树的节点。url, name表示可访问的url路径，name表示url描述。 parent表示当前节点的父节点 ，如果当前节点是跟节点则parent用0表示(别用NULL违反了数据库约束)。 那么上面的表就可以抽象成如下图.</p>
-<p><img src="https://img-blog.csdn.net/20170722194710692?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaGVsbG93b3JkYXBp/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">  </p>
+<p><img src="/../../images/img3.jpg" alt="Alt text"></p>
 <p>接着我们插入测试数据 :</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">1</span>,<span class="string">&#x27;*&#x27;</span>,<span class="string">&#x27;系统管理&#x27;</span>,<span class="number">0</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">2</span>,<span class="string">&#x27;*&#x27;</span>,<span class="string">&#x27;权限管理&#x27;</span>,<span class="number">1</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">20</span>,<span class="string">&#x27;/role/allocation&#x27;</span>,<span class="string">&#x27;角色分配&#x27;</span>,<span class="number">23</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">4</span>,<span class="string">&#x27;/permission/index&#x27;</span>,<span class="string">&#x27;权限列表&#x27;</span>,<span class="number">2</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">6</span>,<span class="string">&#x27;/permission/addPermission.shtml&#x27;</span>,<span class="string">&#x27;权限添加&#x27;</span>,<span class="number">2</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">7</span>,<span class="string">&#x27;/permission/deletePermissionById&#x27;</span>,<span class="string">&#x27;权限删除&#x27;</span>,<span class="number">2</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">8</span>,<span class="string">&#x27;/member/list.shtml&#x27;</span>,<span class="string">&#x27;用户列表&#x27;</span>,<span class="number">22</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">9</span>,<span class="string">&#x27;/member/online.shtml&#x27;</span>,<span class="string">&#x27;在线用户&#x27;</span>,<span class="number">22</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">10</span>,<span class="string">&#x27;/member/changeSessionStatus&#x27;</span>,<span class="string">&#x27;用户Session踢出&#x27;</span>,<span class="number">22</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">11</span>,<span class="string">&#x27;/member/forbidUserById&#x27;</span>,<span class="string">&#x27;用户激活or禁止&#x27;</span>,<span class="number">22</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">12</span>,<span class="string">&#x27;/member/deleteUserById&#x27;</span>,<span class="string">&#x27;用户删除&#x27;</span>,<span class="number">22</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">13</span>,<span class="string">&#x27;/permission/addPermission2Role&#x27;</span>,<span class="string">&#x27;权限分配&#x27;</span>,<span class="number">2</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">14</span>,<span class="string">&#x27;/role/clearRoleByUserIds&#x27;</span>,<span class="string">&#x27;用户角色分配清空&#x27;</span>,<span class="number">23</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">15</span>,<span class="string">&#x27;/role/addRole2User&#x27;</span>,<span class="string">&#x27;角色分配保存&#x27;</span>,<span class="number">23</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">16</span>,<span class="string">&#x27;/role/deleteRoleById.shtml&#x27;</span>,<span class="string">&#x27;角色列表删除&#x27;</span>,<span class="number">23</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">17</span>,<span class="string">&#x27;/role/addRole&#x27;</span>,<span class="string">&#x27;角色列表添加&#x27;</span>,<span class="number">23</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">18</span>,<span class="string">&#x27;role/index&#x27;</span>,<span class="string">&#x27;角色列表&#x27;</span>,<span class="number">23</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">19</span>,<span class="string">&#x27;/permission/allocation&#x27;</span>,<span class="string">&#x27;权限分配2&#x27;</span>,<span class="number">2</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">22</span>,<span class="string">&#x27;*&#x27;</span>,<span class="string">&#x27;用户管理&#x27;</span>,<span class="number">1</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">23</span>,<span class="string">&#x27;*&#x27;</span>,<span class="string">&#x27;角色管理&#x27;</span>,<span class="number">1</span>);</span><br></pre></td></tr></table></figure>
 
@@ -1088,8 +979,8 @@
 <p>start with….connect by…prior语法，依托该语法我们就可以对上面树形表进行递归遍历。</p>
 <p>示例:</p>
 <p>  给出一个节点的值，求出的他父节点和祖宗节点：</p>
-<p><img src="https://img-blog.csdn.net/20170722174815238?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaGVsbG93b3JkYXBp/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">  </p>
-<p>         </p>
+<p><img src="/../../images/img4.jpg" alt="Alt text">
+         </p>
 <p>start with子句： 递归的条件，需要注意的是如果with后面的值是子节点那么求出的就是他的父节点和祖宗节点，如果是父节点那么求出的就是他的子节点和子孙节点，</p>
 <p>                             如果不懂可以把上面start with 后面的条件改成 p.parent&#x3D;0，就可以理解了。</p>
 <p>connect by子句：连接条件。 关键词prior，prior跟它右边的父节点放在一起(prior p.parent)表示往父节点方向遍历, 反之，如果 prior跟子节点放在一起(prior p.id)表示往</p>
@@ -1099,7 +990,7 @@
 <p>下面我来讲一下递归语法的一些用法和一些需要注意的地方：</p>
 <p>             有趣的是我们可以不使用start with 子句，它不像程序语言一样不写就会造成死循环（插一句嘴,曾经有一人和我聊天提到SQL不是编程语言，因为他不满足图灵完全。因为他并不能造成死循环，其实通过递归语句就可以，这个坑我会在后面演示，在本文中并不讨论SQL是不是编程语言）。它只会把会整个表的数据遍历一遍，每一个数据做一次</p>
 <p>根节点，然后遍历树中的其他节点。</p>
-<p> <img src="https://img-blog.csdn.net/20170722185125838?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaGVsbG93b3JkYXBp/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">  </p>
+<p> !<img src="/../../images/img5.jpg" alt="Alt text"></p>
 <p>他等价于如下SQL：</p>
 <p> </p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span>  p.ID,p.NAME,p.PARENT, level <span class="keyword">from</span> u_permission p <span class="keyword">start</span> <span class="keyword">with</span> p.PARENT <span class="keyword">in</span>( <span class="string">&#x27;祖宗节点&#x27;</span>,<span class="string">&#x27;父节点&#x27;</span>,<span class="string">&#x27;子节点&#x27;</span>,<span class="string">&#x27;孙子节点&#x27;</span> ) <span class="keyword">connect</span> <span class="keyword">by</span> p.id<span class="operator">=</span> prior p.parent;</span><br></pre></td></tr></table></figure>
@@ -1114,13 +1005,13 @@
 <p>但是这里隐藏着一个坑， where条件的作用域不是在递归查询中的，而是在递归查询完后的。 所以如果理解不当他可以造成死循环（虽然会检测出来报ORA错误)也就是a的父节点是b, b的父节点是a。</p>
 <p>看一个实用的列子:  </p>
 <p>    如果有一个需求如根据user表的id查出他的权限树，这个时候我们就需要start with后面加子查询。</p>
-<p>      <img src="https://img-blog.csdn.net/20170722191804601?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaGVsbG93b3JkYXBp/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">  </p>
+<p><img src="/../../images/img6.jpg" alt="Alt text"></p>
 <p>          </p>
 <p>    我们可以看到根据子查询返回的根节点查出所有子节点的父亲节点和祖宗节点。  </p>
 <p>下面是一些跟递归语法相关的函数(来自Oracle SQL高级编程)：</p>
 <p>      SYS_CINNECT_BY_PATH函数：</p>
 <p>              这个函数是用来返回组成层级的直到当前行的值, 我一图胜千言把。</p>
-<p>            <img src="https://img-blog.csdn.net/20170722192721218?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaGVsbG93b3JkYXBp/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">  </p>
+<p><img src="/../../images/img7.jpg" alt="Alt text"></p>
 <p>    简单来说就是用来做拼接的，至于想拼接什么看各位看官的心情咯。</p>
 <p>CONNECT_BY_ISLEAF伪列：</p>
 <p>         这个伪列呢，说直白一点跟level的作用差不多，只不过他是用来在递归查询中显示叶子节点而非递归深度。 留给看官实验，不上传实验图片了。</p>
@@ -1445,13 +1336,13 @@
 <p>这段代码的意思是  获得List对象的迭代器，  然后通过迭代器来遍历List对象内保存的元素.</p>
 <p>接着我们就可以调用他的 hasNext方法和next方法去操作他了.</p>
 <p>接着贴出一段错误的代码这是在我工作机上面测试的代码 jdk是1.8 (当然我相信以前的jdk结果应该也是这样):</p>
-<p>  <img src="https://img-blog.csdn.net/20170108154541837?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaGVsbG93b3JkYXBp/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center"></p>
+<p><img src="/../../images/img8.jpg" alt="Alt text"></p>
 <p> </p>
 <p>那么为什么二种删除方式一个有错一个没错呢(这个问题难倒了工作三年的一个朋友).  经过刚刚的测试，我们发现用迭代器本身删除是可以的，但是在迭代器中</p>
 <p>对list本身进行删除就不行了， 对于这种莫名其妙的问题，我们从源码入手， 首先根据上面的我们先看看ArrayList他是怎么返回Iterator实例的，最终源码如下：</p>
-<p><img src="https://img-blog.csdn.net/20170108155343731?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaGVsbG93b3JkYXBp/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">  </p>
+<p><img src="/../../images/img9.jpg" alt="Alt text"></p>
 <p> 在ArrayList类中有一个私有类Private Itr 我们注意到expectedModCount这个字段，他的初始值是等于modCount的。 那modCount又是干啥的呢 最直接的。 看源码：</p>
-<p> <img src="https://img-blog.csdn.net/20170108160120875?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaGVsbG93b3JkYXBp/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center"></p>
+<p><img src="/../../images/img10.jpg" alt="Alt text"></p>
 <p>我们从源码可以对集合的每一次 add &#x2F; remove 都会触发一下这个字段，而上面Itr的remove 不管在删除还是添加都会触发一个方法(csdn上截图太麻烦我直接写了 )   checkForComodification();这个方法， 大家可以看看上面的截图而这个 checkForComodification();方法中只有一个功能</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (modCount != expectedModCount)</span><br><span class="line">               <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">ConcurrentModificationException</span>();</span><br></pre></td></tr></table></figure>
 
@@ -1977,11 +1868,216 @@
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2016/08/01/JAVA%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%20(JMM)%E5%92%8C%E5%90%8C%E6%AD%A5%E4%BB%A5%E5%8F%8A%E5%8F%AF%E8%A7%81%E6%80%A7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="周杰">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/08/01/JAVA%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%20(JMM)%E5%92%8C%E5%90%8C%E6%AD%A5%E4%BB%A5%E5%8F%8A%E5%8F%AF%E8%A7%81%E6%80%A7/" itemprop="url">JAVA内存模型 (JMM)和同步以及可见性</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-08-01T23:42:24+08:00">
+                2016-08-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <span id="more"></span>
+
+<p>可见性：</p>
+<p>   一般来说，我们对可见性的定义是一个线程对共享变量值的修改，能够被其他线程</p>
+<p>及时的看到，那么这个时候我们一般称这个变量是线程间可见的。</p>
+<p>那么什么是共享变量？</p>
+<p>      一般来讲，如果一个变量在多个线程的工作内存中都存在有副本，那么这个</p>
+<p>    变量就是这几个线程的共享变量。</p>
+<p> 那么啥是工作内存呢？ 这个时候就是我们的JMM登场了。</p>
+<p>Java内存模型（JMM）。描述了Java程序中各种线程共享变量的访问规则，以及在JVM中将变量存储到内存和从内存中读取出来变量这样的底层细节。</p>
+<p>在多核系统中，处理器一般有一层或多层的缓存，这些的缓存通过加速数据访问，和</p>
+<p>降低共享内存在总线上的通讯。来提高cpu性能。</p>
+<p>在处理器层面上，内存模型定义了一个充要条件，“让当前的处理器可以看到其他处理器写入到内存的数据”  以及 “其他处理器可以看到当前处理器写入到内存的数据”。</p>
+<p>有些处理器有很强的内存模型，能够让所有的处理器在任何时候任何指定的内存地址上都可以看到完全相同的值，而有的处理器内存模型较弱，在这种处理器中，必须需用内存屏障。来刷新本地处理器缓存并使本地处理器无效。目的是为了让当前处理器能够看到其他处理器的写操作或让其他处理器看到当前处理器的写操作。</p>
+<p>在JMM中所有的变量都存储在主内存中，且每个线程都有自己独立的工作内存，里面保存着该线程使用到的变量的副本。（其实就是主内存的一份拷贝）<br><img src="/../../images/img11.jpg" alt="Alt text"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Class Reordering&#123;</span><br><span class="line">  <span class="type">int</span> x=<span class="number">0</span>, y=<span class="number">0</span>;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">writer</span><span class="params">()</span>&#123;</span><br><span class="line">   x=<span class="number">1</span>;</span><br><span class="line">   y=<span class="number">2</span>;</span><br><span class="line">  &#125; </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">reader</span><span class="params">()</span>&#123;</span><br><span class="line"> <span class="type">int</span> r1=y;</span><br><span class="line"> <span class="type">int</span>  r2=x;</span><br><span class="line">&#125;</span><br><span class="line"> &#125;</span><br><span class="line">如果在并发中执行这段代码， 读取Y变量将会得到<span class="number">2</span>这个值。 因为这个写入比写到X变量更晚一些。 但是如果重排序发生了， 那么就能发生对Y变量的写入操作，读取<span class="number">2</span>个变量</span><br><span class="line">的操作紧随其后，而且写入到x这个操作能发生程序的结果可能是r1=<span class="number">2</span> r2=<span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+
+<p>当然不管编译器如果进行 重排序， 也要遵循as-if-serial语义。</p>
+<p>as-if-serial语义的意思是： 无论如何重排序，程序执行的结果应该与代码顺序执行的结果是一样的。 这点我们一般靠java编译器在单线程下做保证。 打个比喻：</p>
+<pre><code>  `int num1=1;  //1`
+ 
+
+ 
+
+  `int num2=2;  //2`
+ 
+
+ 
+
+  `int sum=num1+num2;//3`
+ 
+</code></pre>
+<p> 在单线程的情况下， 第一 第2 他们的顺序是可以进行重排序的， 但是第三行是不行的.</p>
+<p> 所在在单线程的情况下， 我上面所讲的霹雳啪啦的一大堆理论等于放屁， 别急我们看下面。</p>
+<p>在多个线程访问下， as-if-serial是没有作用的， 按照一般情况，一个线程不会关注其他线程正在做什么。无论其他线程在计算还是在读写， 他都不太关心。 但是等他需要关心</p>
+<p>其他线程在做什么的时候， 就需要做一个事情了， 这个事情就是同步！~</p>
+<p>从java内存模型的角度讲，没有正确同步的含义是</p>
+<p>    1.一个线程中有一个对变量的写操作</p>
+<p>     2.另外一个线程对同一个变量有读操作</p>
+<p>     3. 而且写操作和读操作没有通过同步保证顺序</p>
+<p>当这些规则被违反的时候，我们就说在这个变量上有一个“数据竞争”(data race)。一个有数据竞争的程序就是一个没有正确同步的程序。</p>
+<p>java在语言层面支持可见性和同步的方式是通过：</p>
+<p>  synchronized， volatile. 来实现的。 其中volatile并不能实现可见性。</p>
+<p>我这里说的并没有包括jdk1.5以后加入的并发包。</p>
+<p>JMM对synchornized 有二条规定：</p>
+<p> 1.线程解锁前，必须把共享变量的最新值刷新到主内存中  </p>
+<p>  2.线程加锁时， 将清空工作内存中共享变量的值，从而使用共享变量时需要从</p>
+<p>    主内存中重新读取最新的值。</p>
+<p>所以在synchronized代码块退出的时候就保证了主内存是最新的值， 在加锁时就保证  </p>
+<p> 了加载的是最新的值。 现在大家应该知道synchronized 为啥能同步了吧。</p>
+<p>其实synchornized 可以保证可见性。 应该会有人很奇怪为啥sync锁 还能保证可见性。 下面我来说不可见的原因有哪些。</p>
+<p>在多线程环境下能够造成不可见的原因一般有三点：</p>
+<p> 1. 线程交叉执行。</p>
+<p> 2. 重排序结合线程交叉执行.</p>
+<p>3.共享变量没有及时更新</p>
+<p>首先synchronized 已经保证了线程交叉执行的正确性，  所以第一条没用。 而关于第二条</p>
+<p>嘿嘿嘿，我上面也写了 单线程情况下不管你怎么重排序都要保证结果一致性。 所以也废除。 第三…..  大家应该能猜得到。  </p>
+<p>大家是不是觉得stnchronized 很无敌很牛逼了？  其实他也是有缺点的， 不然不会有大名鼎鼎的java.util.concurrent并发包的出现。</p>
+<p>  我以我的理解说几点sync的坏处， 第一 synchronized粒度太粗， 而且该关键字没有提供当线程没获取到锁的情况下的超时逻辑， 而且。 我们应该知道， 一个只读变量他在多线程坏境下是安全的， 因为他并不会修改变量的值，所以捏。 sync锁应该给我们提供一个对互斥区域的并发读。 但是很遗憾他并没有。。。。</p>
+<p> volatile 这个关键字，他可以实现内存的可见性， 深入点来讲，其实他就是加入了内存</p>
+<p>  屏障和禁止重排序优化来实现的， 所以我上面所说的不完全都是废话….. 当我们</p>
+<p> 对volatile变量执行写操作的时候，会在写操作后加入一条store屏障指令，他会把cpu写缓存器的缓存强制写入的主内存中去。</p>
+<p>当对volatile变量执行读操作时，会在读操作前加入一条load屏障指令，他呢，也会强制cpu读到主内存中去。</p>
+<p> 其实在java内存模型中一共定义了8条操作指令。他们负责和工作内存打交道。具体的指令….. 我忘了…  大家可以查一下。太晚了，很多东西记不起。有空在更新一下。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">&lt;i class&#x3D;&quot;fa fa-angle-right&quot;&gt;&lt;&#x2F;i&gt;</a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">&gt;</a>
   </nav>
 
 
@@ -2025,9 +2121,9 @@
             
               <div class="site-state-item site-state-posts">
               
-                <a href="/archives">
+                <a href="/archives/%7C%7C%20archive">
               
-                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-count">21</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2086,7 +2182,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; 2017 &mdash; <span itemprop="copyrightYear">2023</span>
+        <div class="copyright">&copy; 2016 &mdash; <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

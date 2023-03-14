@@ -206,6 +206,16 @@
           </a>
         </li>
       
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
 
       
     </ul>
@@ -225,169 +235,6 @@
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2015/10/25/kmp%E7%AE%97%E6%B3%95/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="周杰">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2015/10/25/kmp%E7%AE%97%E6%B3%95/" itemprop="url">kmp算法</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-10-25T19:06:05+08:00">
-                2015-10-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%92%8C%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
-                    <span itemprop="name">数据结构和算法</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <span id="more"></span>
-
-<p>如有一串字符”a b  c  d “ 我想知道里面是否包含字符 c d 用传统的暴力算法 我们可以这样解：</p>
-<p>java代码:</p>
-<p>public static int  char_next(char [] str, char str_s[])<br>{<!-- \--><br> int i&#x3D;0;  &#x2F;&#x2F;主串下标<br> int j&#x3D;0;   &#x2F;&#x2F;子串下标<br> while(str[i]&lt;&#x3D;str.length &amp;&amp; str_s[j]&lt;&#x3D;str_s.length)<br> {<!-- \--><br> if(str[i+j]&#x3D;&#x3D;str_s[j])<br> {<!-- \-->  </p>
-<p> j++;<br> }<br> else<br> {<!-- \--><br>         i++;<br> j&#x3D;0;<br> }<br> }<br> return i-1;  </p>
-<p>}  </p>
-<p>  当发生失配后， 也就是str[i+j]!&#x3D;str_s[j]后那么子串发生失配了， 传统的算法就是让j（子串）回溯到开始位置</p>
-<p>   主串i+1 重新进行匹配。 这种算法虽然通熟易懂逻辑清晰但是效率堪忧。 </p>
-<p>下面给出我对KMP算法代码和理解，它是一种线性时间查找的算法，一开始接触时非常难懂。其实对于kmp算法，理解了它的next数组就差不多理解了怎个算法</p>
-<p>  kmp算法通过移动next数组在失配后重新进行匹配</p>
-<p>import java.util.*;  </p>
-<p>public class kmp {<!-- \-->  </p>
-<p>public static int [] getkmp_next(char str[])<br>{<!-- \--><br>int j&#x3D;-1;<br>int k&#x3D;0;  </p>
-<p>int next[]&#x3D;new int [6];<br>next[0]&#x3D;j;  </p>
-<p>while(k&lt;&#x3D;str.length-1)<br>if(j&#x3D;&#x3D;-1 || str[j]&#x3D;&#x3D;str[k])<br>{<!-- \--><br>j++;<br>k++;  <br>next[k]&#x3D;j; &#x2F;&#x2F;存入next数组 j代表next值 k代表下标  </p>
-<p>}<br>else  &#x2F;&#x2F;当发生失配后重新开始匹配<br>j&#x3D;next[j];  <br>return next;<br>}<br>public static void main(String[]args)<br>{<!-- \--><br>char []str&#x3D;{‘a’,’b’,’c’,’d’}; &#x2F;&#x2F;主串   </p>
-<p>char []str_s&#x3D;{‘c’,’d’};  &#x2F;&#x2F;模式串<br>int p&#x3D;str_s.length;<br>int r;<br>int next[]&#x3D;getkmp_next(str_s); &#x2F;&#x2F;求子串next值<br>int i&#x3D;0; &#x2F;&#x2F;主串下标<br>int j&#x3D;-1;  &#x2F;&#x2F;子串下标  </p>
-<p>while(i&lt;&#x3D;str.length-1 &amp;&amp;j&lt;&#x3D;str_s.length-1)<br>if(j&#x3D;&#x3D;-1 || str[i]&#x3D;&#x3D;str_s[j])  <br>{<!-- \--><br>i++;j++;<br>}<br>else  &#x2F;&#x2F;失配后j根据next的值决定子串移动位置<br>j&#x3D;next[j];  </p>
-<p>if(j&#x3D;&#x3D;p)<br>{<!-- \--><br>r&#x3D;i-j;<br>System.out.println(“从第”+r+”个位置开始匹配”);<br>}<br>else<br>System.out.println(“找不到匹配位置”);  </p>
-<p>}<br>}  </p>
-<p>注释中是我对KMP算法的理解，若有不对之处还望各位大神轻喷。小弟一定改正。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
     
       
 
@@ -564,7 +411,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/2/">&lt;i class&#x3D;&quot;fa fa-angle-left&quot;&gt;&lt;&#x2F;i&gt;</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span>
+    <a class="extend prev" rel="prev" href="/page/2/">&lt;</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span>
   </nav>
 
 
@@ -608,9 +455,9 @@
             
               <div class="site-state-item site-state-posts">
               
-                <a href="/archives">
+                <a href="/archives/%7C%7C%20archive">
               
-                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-count">21</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -669,7 +516,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; 2017 &mdash; <span itemprop="copyrightYear">2023</span>
+        <div class="copyright">&copy; 2016 &mdash; <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
