@@ -341,132 +341,14 @@
 
       
         
-          
-            <span id="more"></span>
-
-<h3 id="你真的理解jwt吗？"><a href="#你真的理解jwt吗？" class="headerlink" title="你真的理解jwt吗？"></a>你真的理解jwt吗？</h3><ul>
-<li><a href="#1JWT_2">1.JWT是何物，有哪些常用的场景</a></li>
-<li><a href="#2jwt_37">2.jwt的组成和生成方式</a></li>
-<li><a href="#3jwejwt_88">3.使用jwe来使你的jwt更加安全</a></li>
-<li><a href="#4_jwt_161">4. jwt的缺点以及常见的理解误区</a></li>
-</ul>
-<h1 id="1-JWT是何物，有哪些常用的场景"><a href="#1-JWT是何物，有哪些常用的场景" class="headerlink" title="1.JWT是何物，有哪些常用的场景"></a>1.JWT是何物，有哪些常用的场景</h1><p>JWT(json web token)是设计一种简洁，安全，无状态的token的实现规范<a target="_blank" rel="noopener" href="https://www.rfc-editor.org/rfc/rfc7519.html">rfc7519</a>，通常用于网络请求方和网络接收方之间的网络请求认证。</p>
-<p><strong>jwt的常用场景</strong><br>1.1: restful api接口的无状态认证, 在传统的web应用中,我们通常采用session认证。 session<br>认证的流程大概是这样的。</p>
-<p><code>session认证流程:</code></p>
-<ul>
-<li>客户端将用户名&#x2F;密码通过某种加密的方式发送给服务器</li>
-<li>服务器接收到客户端请求之后进行验证，验证通过后使用Set-Cookie将用户的唯一sessionid放入到cookie当中，并将生成的sessionid和用户的关联信息存入到内存。</li>
-<li>客户端第二次访问后服务器从当前cookie中取出sessionid并从内存中拿到相同的sessionid. 如果不存在，或者没有携带sessionid则说明该用户登陆过期，或者未登陆。</li>
-</ul>
-<p><code>session认证的一些缺点:</code></p>
-<ul>
-<li>由于使用session进行认证的方式必须存储sessionid,当用户量过大时对服务器内存消耗影响巨大. 如果你没有设置session的过期时间(关闭浏览器并不会导致cookie消失)那么对你的服务器来说消耗是致命的。</li>
-<li>如果你没有将session存在一个所有服务器都可以获取得到的地方如redis, 那么意味着在本台服务器上面存储的sessionid其他服务器无法获取。用户进行请求时必须请求到这台服务器上面。可扩展性较差。</li>
-<li>跨平台性较差，传统的session认证方式在移动端很难行得通。你必须开发二套不同的逻辑对web和移动端进行认证。</li>
-</ul>
-<p><code>jwt认证流程:</code></p>
-<ul>
-<li>客户端将用户名&#x2F;密码通过某种加密的方式发送给服务器。</li>
-<li>服务器接收到客户端请求后进行验证，验证通过服务器生成token返回给客户端。客户端将token存储在本地。</li>
-<li>客户端每次请求将token携带在http header头中， 服务器端将token取出进行解密。</li>
-</ul>
-<p><code>jwt认证的优点:</code></p>
-<ul>
-<li>服务器端无需保存token，以加解密的方式代替存储，节省了内存空间。</li>
-<li>无状态的token不依赖于服务器保存会话信息，更利于水平扩展。</li>
-<li>相比于传统的session认证方式，jwt对移动端的支持更友好。</li>
-</ul>
-<p>可以看出jwt认证解决了传统的session认证的一些不足之处。</p>
-<p>1.2: 一次性认证：<br>如需要对某一个应用进行授权使用，此时就可以将jwt进行携带访问。</p>
-<h1 id="2-jwt的组成和生成方式"><a href="#2-jwt的组成和生成方式" class="headerlink" title="2.jwt的组成和生成方式"></a>2.jwt的组成和生成方式</h1><p>2.1jwt主要由三个部分组成，分别是头部(header)，载荷(payload)，签名(signature)组成。</p>
-<p><code>header:</code></p>
-<ul>
-<li>头部是用来声明此jwt的类型和加密算法，它们通常由alg和typ这二个字段组成。<a target="_blank" rel="noopener" href="https://www.rfc-editor.org/rfc/rfc7519.html#section-3.1">rfc文档示范的header头</a></li>
-<li>alg字段通常用于表示加密采用的算法。</li>
-<li>typ字段通常用于表示类型。</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="string">&quot;typ&quot;</span>:<span class="string">&quot;JWT&quot;</span>, <span class="string">&quot;alg&quot;</span>:<span class="string">&quot;HS256&quot;</span>&#125; <span class="comment">//示范的jwt header头</span></span><br></pre></td></tr></table></figure>
-
-<p><code>payload:</code></p>
-<ul>
-<li>载荷就是我们存放公共参数&#x2F;私有参数的地方.通俗点说该字段就是存放系统中用户的信息和jwt本身的一些信息，rfc文档本身替我们提供了一组字段的声明 (<a target="_blank" rel="noopener" href="https://www.rfc-editor.org/rfc/rfc7519.html#section-4">Claims</a>)</li>
-<li>iss: 该字段表示jwt的签发者。可以用你的应用唯一标识或者高权限的userid填充此字段。</li>
-<li>sub: 该jwt面向的用户。</li>
-<li>aud: jwt的接收方。</li>
-<li>exp: jwt的过期时间,通常来说是一个时间戳。</li>
-<li>iat: jwt的签发时间,常来说是一个时间戳。</li>
-<li>jti：此jwt的唯一标识。通常用于解决请求中的重放攻击。该字段在大多数地方没有被提及或使用。因为使用此字段就意味着必须要在服务器维护一张jti表， 当客户端携带jwt访问的时候需要在jti表中查找这个唯一标识是否被使用过。使用这种方式防止重放攻击似乎让jwt有点怪怪的感觉, 毕竟jwt所宣称的优点就是无状态访问。-.-</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//一个正儿八经的payload示范</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;iss&quot;</span>: <span class="string">&quot;appid_xxxxxx&quot;</span></span><br><span class="line">    <span class="string">&quot;sub&quot;</span>: <span class="string">&quot;012345122&quot;</span>,</span><br><span class="line">    <span class="string">&quot;exp&quot;</span>: <span class="string">&quot;1572246721840&quot;</span>,</span><br><span class="line">    <span class="string">&quot;iat&quot;</span>: <span class="string">&quot;1592246721840&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><code>signature签名流程:</code></p>
-<ul>
-<li>首先将header和payload进行base64编码，然后使用”.”将header和payload拼接起来。 类似于像下面这样:</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">base64data</span> <span class="operator">=</span> Base64.encode(header)+<span class="string">&quot;.&quot;</span>+Base64.encode(payload)</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>在将payload和header进行base64之后进行签名，得到签名后的数据。 签名所使用的算法来自于header头中的alg字段。 签名过程类似于像下面这样:</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="type">JWSSigner</span> <span class="variable">signer</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ECDSASigner</span>(<span class="built_in">this</span>.privateKey);</span><br><span class="line">       </span><br><span class="line">         <span class="built_in">this</span>.signature = signer.sign(base64data);</span><br><span class="line">        <span class="comment">//第一步， 实例化一个签名对象</span></span><br><span class="line">        <span class="comment">//第二步，对base64data 进行签名</span></span><br><span class="line">       </span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>签名之后将签名的值和base64之后的header和payload用”.”号连接起来。此时一个完整的jwt就出来啦。</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>jwt的最终结构: header.payload.signature</th>
-</tr>
-</thead>
-</table>
-<h1 id="3-使用jwe来使你的jwt更加安全"><a href="#3-使用jwe来使你的jwt更加安全" class="headerlink" title="3.使用jwe来使你的jwt更加安全"></a>3.使用jwe来使你的jwt更加安全</h1><p><code>签名到底在干什么</code>:<br>在上面我们所谈到的jwt仅仅是签名后的jwt。在这里我们需要明白一个概念，那就是签名并不能保证数据的安全,也就是说如果有人获取到了你的jwt那么他可以通过转码得到你jwt当中所有的信息。那么读者可能会有点想骂人了，你特么上面说了那么多连一个数据安全都不能保证那么我看那么多有啥作用- -. 别急，我们先来了解一下签名的概念。其实对于签名更专业点的来说就是进行了一次哈希散列，对于散列我们首先要保证一下四点概念.</p>
-<ul>
-<li>相同的输入将始终产生相同的输出。</li>
-<li>多个不同的输入不应产生相同的输出。</li>
-<li>从输出到输入应该是不可能的。</li>
-<li>给定输入的任何修改都将导致哈希值发生巨大变化。</li>
-</ul>
-<p>从上面4点大家看明白了吗？ 哈希与身份验证结合使用，可以产生强有力的证据来证明给定的消息尚未被修改。也就是说这个jwt从我这里签发以后无法改变，从而保证了数据来源的可靠性。 当客户端携带jwt进行请求时服务器在执行一遍签名步骤。 如果签名的值一样就表示这个jwt是可靠的。此时我们在客户端和服务器之间就建立一种可信任的token机制。</p>
-<p><code>应该怎样保证数据安全</code>:<br>对于如何保证jwt本身的数据安全很多文章或文档都可以提及,我们可以把上面所生成的jwt成为jws(JSON Web Signed). 他本身的数据并没有进行加密。 此时如果我们想保证数据的安全就需要使用jwe(JSON Web Encryption)对jwt进行加密。jwe加密的秘文如下所示</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// jwe相对于jws来说多了二个组成部分。</span></span><br><span class="line">eyJhbGciOiJSU0EtT0FFUCIsImVuYyI6IkEyNTZHQ00ifQ.</span><br><span class="line">     OKOawDo13gRp2ojaHV7LFpZcgV7T6DVZKTyKOMTYUmKoTCVJRgckCL9kiMT03JGe</span><br><span class="line">     ipsEdY3mx_etLbbWSrFr05kLzcSr4qKAq7YN7e9jwQRb23nfa6c9d-StnImGyFDb</span><br><span class="line">     Sv04uVuxIp5Zms1gNxKKK2Da14B8S4rzVRltdYwam_lDp5XnZAYpQdb76FdIKLaV</span><br><span class="line">     mqgfwX7XWRxv2322i-vDxRfqNzo_tETKzpVLzfiwQyeyPGLBIO56YJ7eObdv0je8</span><br><span class="line">     1860ppamavo35UgoRdbYaBcoh9QcfylQr66oc6vFWXRcZ_ZT2LawVCWTIy3brGPi</span><br><span class="line">     6UklfCpIMfIjf7iGdXKHzg.</span><br><span class="line">     48V1_ALb6US04U3b.</span><br><span class="line">     5eym8TW_c8SuK0ltJ3rpYIzOeDQz7TALvtu6UG9oMo4vpzs9tX_EFShS8iB7j6ji</span><br><span class="line">     SdiwkIr3ajwQzaBtQD_A.</span><br><span class="line">     XFBoMYUZodetZdvTiFvSkQ</span><br></pre></td></tr></table></figure>
-
-<p><code>jwe的5个组成部分</code>:</p>
-<ul>
-<li>JWE header: 描述用于创建jwe加密密钥和jwe密文的加密操作，类似于jws中的header。参数不一一描述，详情请见<a target="_blank" rel="noopener" href="https://openid.net/specs/draft-jones-json-web-encryption-02.html#ReservedHeaderParameterName">jwe header参数</a></li>
-<li>JWE Encrypted Key：用来加密文本内容所采用的算法。</li>
-<li>JWE initialization vector: 加密明文时使用的初始化向量值，有些加密方式需要额外的或者随机的数据。这个参数是可选的。</li>
-<li>JWE Ciphertext:明文加密后产生的密文值。</li>
-<li>JWE Authentication Tag：数字认证标签。</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//一个完整的jwe json结构</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;protected&quot;</span>:<span class="string">&quot;jwe受保护的header头&quot;</span>,</span><br><span class="line">    <span class="string">&quot;unprotected&quot;</span>:<span class="string">&quot;JWE Shared Unprotected Header数据&quot;</span>,</span><br><span class="line">    <span class="string">&quot;header&quot;</span>:<span class="string">&quot;&quot;</span>,</span><br><span class="line">    <span class="string">&quot;encrypted_key&quot;</span>:<span class="string">&quot;密钥加密后数据	&quot;</span>,</span><br><span class="line">    <span class="string">&quot;aad&quot;</span>:<span class="string">&quot;额外的认证数据&quot;</span>,</span><br><span class="line">    <span class="string">&quot;iv&quot;</span>:<span class="string">&quot;同上的 JWE initialization vector&quot;</span>,</span><br><span class="line">    <span class="string">&quot;ciphertext&quot;</span>:<span class="string">&quot;同上的JWE Ciphertext&quot;</span>,</span><br><span class="line">    <span class="string">&quot;tag&quot;</span>:<span class="string">&quot;同上的JWE Authentication Tag&quot;</span></span><br><span class="line">   &#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p><code>jwe创建流程</code>:</p>
-<ul>
-<li>根据头部 alg 的声明，将header头进行编码</li>
-<li>随机生成密钥</li>
-<li>加密密钥</li>
-<li>生成iv如果不需要，此步骤可以省略.</li>
-<li>加密原始报文</li>
-<li>生成认证算法得到Authentication Tag.</li>
-<li>如果明文有声明zip压缩，那么压缩明文</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Base64.encode(header)+<span class="string">&quot;.&quot;</span>+Base64.encode(encrypted_key)+<span class="string">&quot;,&quot;</span>+Base64.encode(iv)+<span class="string">&quot;.&quot;</span>+Base64.encode(ciphertext)+<span class="string">&quot;.&quot;</span>Base64.encode(tag)</span><br></pre></td></tr></table></figure>
-
-<h1 id="4-jwt的缺点以及常见的理解误区"><a href="#4-jwt的缺点以及常见的理解误区" class="headerlink" title="4. jwt的缺点以及常见的理解误区"></a>4. jwt的缺点以及常见的理解误区</h1><p><code>缺点</code>：</p>
-<ul>
-<li>无法主动的过期token. 常见的场景为后台踢出用户或封禁用户,此时若是token还在生效<br>时间范围内,那么意味着该用户在被踢出系统后还可以在这个时间范围内进行访问。又或者用户修改了密码，此时原token依然可以进行加解密也就代表着用户仍然可以继续访问。 更为致命的是大多数客户端会将token存放在Local Storage或者vuex中，这意味着除非用户点击退出登陆。否则就算关闭软件在重新打开也会造成原密码可以登陆的假象。</li>
-<li>jwt对比于传统的session认证方案并不会提高运行效率，因为本质上jwt做的是一个以时间换空间的动作。 频繁的加解密会带来不小的性能开销。</li>
-</ul>
-<p><code>常见的理解误区</code>:</p>
-<ul>
-<li><code>对jwt进行存储</code>,这个是最常见的理解误区。 事实上很多人都觉得将jwt进行存储可以完美的解决主动过期的问题, 然而这是一种赔了夫人又损兵的做法。 既无法节省空间也无法节省时间。 如果你的应用必须要主动过期的功能，那么我推荐你使用传统的session，事实上传统的session也有不少成熟的解决方案。 如spring-session等。</li>
-<li><code>jwt被盗用会导致数据泄漏不安全</code>, 事实上使用jwe加密的jwt是不存在数据不安全的问题的。 第二，jwt的数据一般都是非敏感数据，由于签名机制的存在所以你盗用了jwt做不了任何事情。</li>
-<li><code>不存储如何实现退出功能</code>。 直接在客户端清除token就行了。因为服务器不存储所以只需要在客户端清除token就可以做到用户退出。</li>
-<li><code>将token的时期设计的非常长</code>。这是一个会造成很多隐性问题的设计，比如上述的密码修改等问题。 这个时候可以参见oauth2的做法，将token的过期时间设置为一小时，但是增加一个refreshToken。客户端在没有触发退出或者修改密码等操作时通过refreshToken来刷新token。</li>
-</ul>
-
-          
+          认证授权理论
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/10/28/%E4%B8%80%E6%96%87%E8%AF%BB%E6%87%82JWT,JWS,JWE/">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -605,72 +487,14 @@
 
       
         
-          
-            <span id="more"></span>
-
-<p>Spring Moblie是什么？</p>
-<p>      SpringMoblie是SpringMvc的一个扩展项目，它旨在简化移动web应用程序的开发。 开源地址为 <a target="_blank" rel="noopener" href="https://github.com/spring-projects/spring-mobile">https://github.com/spring-projects/spring-mobile</a></p>
-<p>Spring Moblie可以做什么？</p>
-<p>         它可以检测到访问当前服务器程序的请求是通过什么设备发起的（PC, 平板， 移动手机），并根据访问设备的不同，跳转到与设备相应的view.</p>
-<p>Maven地址:   </p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">  </span><br><span class="line"><span class="tag">&lt;<span class="name">org.springframework.mobile-version</span>&gt;</span>1.1.3.RELEASE<span class="tag">&lt;/<span class="name">org.springframework.mobile-version</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- spring mobile --&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.mobile<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-mobile-device<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;org.springframework.mobile-version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>先来看看它最常用的一个接口：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.springframework.mobile.device;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> 这个接口用于检测当前请求的设备类型</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">Device</span> &#123;</span><br><span class="line">  </span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    该方法用于确定当前客户端请求是否是PC端</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">   <span class="type">boolean</span> <span class="title function_">isNormal</span><span class="params">()</span>;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">   　该方法用于确定当前客户端请求是否是移动设备  如苹果 安卓</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="type">boolean</span> <span class="title function_">isMobile</span><span class="params">()</span>;</span><br><span class="line">    </span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    该方法用于确定当前客户端请求是否是平板设备 如 iPad </span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">  <span class="type">boolean</span> <span class="title function_">isTablet</span><span class="params">()</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>接着在Springmvc.xml 配置文件中 添加 DeviceResolverHandlerInterceptor 拦截器:</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">mvc:interceptors</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">beans:bean</span> <span class="attr">class</span>=<span class="string">&quot;org.springframework.mobile.device.DeviceResolverHandlerInterceptor&quot;</span> /&gt;</span></span><br><span class="line"> <span class="tag">&lt;/<span class="name">mvc:interceptors</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>又或者你可以在web.xml中配置Filter：</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">filter</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>deviceResolverRequestFilter<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">filter-class</span>&gt;</span>org.springframework.mobile.device.DeviceResolverRequestFilter<span class="tag">&lt;/<span class="name">filter-class</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">filter</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>以上二种配置任选一种，他们起到的作用是一样的，笔者测试的是第一种,通过mvc 配置拦截器.</p>
-<p>配置以上拦截器后你可以这样获取当前请求的设备类型:  </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Device</span> <span class="variable">currentDevice</span> <span class="operator">=</span> DeviceUtils.getCurrentDevice(servletRequest)</span><br></pre></td></tr></table></figure>
-
-<p>当然我相信各位更希望它在@Controller(@RestController)的@RequestMapping(“&#x2F;“) 中做为一个参数自动传递, 如下面这样：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(value = &quot;signin&quot;, method = RequestMethod.GET)</span></span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="keyword">public</span>  String <span class="title function_">signin</span><span class="params">(Device device)</span>&#123;</span><br><span class="line"> <span class="keyword">if</span>(device.isNormal())&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;访问设备类型为PC&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(device.isMobile())&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;访问设备类型为移动设备&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (device.isTablet())&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;访问设备类型为平板&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>那么你需要配置DeviceWebArgumentResolver像下面这样:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;mvc:annotation-driven&gt;</span><br><span class="line">    &lt;mvc:argument-resolvers&gt;</span><br><span class="line">        &lt;beans:bean class=<span class="string">&quot;org.springframework.mobile.device.DeviceWebArgumentResolver&quot;</span> /&gt;</span><br><span class="line">    &lt;/mvc:argument-resolvers&gt;</span><br><span class="line">&lt;/mvc:annotation-driven&gt;</span><br></pre></td></tr></table></figure>
-
-<p>2. 用户偏好设置和站点管理.</p>
-<p>          Spring Moblie允许一个用户在应用程序的多个站点进行视图切换，考虑到一种原因，当前用户使用移动UI进行访问，然而他想要访问的内容移动UI并没有提供视图(或功能)  这时就需要进行视图切换.</p>
-<p>   2.1 通过用户点击来确定用户偏向于访问正常站点还是移动站点：  </p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;$&#123;currentUrl&#125;?site_preference=normal&quot;</span>&gt;</span>正常站点<span class="tag">&lt;/<span class="name">a</span>&gt;</span> | <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;$&#123;currentUrl&#125;?site_preference=mobile&quot;</span>&gt;</span>移动站点<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>  2.2点击之后，Spring Moblie会把用户偏好选项存到Cookie里面,通过CookieSitePreferenceRepository类，当然你也可以自己存到Cookie里面或另行处理</p>
-<p>  2.3 配置拦截器SitePreferenceHandlerInterceptor：</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">mvc:interceptors</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">beans:bean</span> <span class="attr">class</span>=<span class="string">&quot;org.springframework.mobile.device.site.SitePreferenceHandlerInterceptor&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">mvc:interceptors</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>        默认情况下SitePreferenceHandlerInterceptor会默认通过CookieSitePreferenceRepository将用户选项存入Cookie</p>
-<p>    以下是SitePreferenceHandlerInterceptor代码，其中默认的构造函数会创建一个CookieSitePreferenceRepository，而CookieSitePreferenceRepository中的构造函数</p>
-<p>   会setCookieName将用户选项存入Cookie, 当然你可以插入另外一个Site偏好处理程序.  </p>
-<p><img src="/../../images/img2.jpg" alt="Alt text"></p>
-<p>     </p>
-<p>2.4  通过以上配置，可以通过以下代码或者用户首选项：  </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">SitePreference</span> <span class="variable">sitePreference</span> <span class="operator">=</span> SitePreferenceUtils.getCurrentSitePreference(servletRequest);</span><br></pre></td></tr></table></figure>
-
-<p>2.5 如果你想通过@Controller(@RestController)的@RequestMapping(“&#x2F;“) 中做为一个参数自动传递,那么你需要和上面一样配置:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;mvc:annotation-driven&gt;</span><br><span class="line">    &lt;mvc:argument-resolvers&gt;</span><br><span class="line">        &lt;beans:bean class=<span class="string">&quot;org.springframework.mobile.device.site.SitePreferenceWebArgumentResolver&quot;</span> /&gt;        </span><br><span class="line">    &lt;/mvc:argument-resolvers&gt;</span><br><span class="line">&lt;/mvc:annotation-driven&gt;</span><br><span class="line">                </span><br></pre></td></tr></table></figure>
-
-<p>    接着使用如下代码:</p>
-<p>     </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(value = &quot;signin&quot;, method = RequestMethod.GET)</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">public</span>  String <span class="title function_">signin</span><span class="params">(SitePreference site)</span>&#123;</span><br><span class="line">       <span class="keyword">if</span>(site==SitePreference.MOBILE)&#123;</span><br><span class="line">           <span class="keyword">return</span> <span class="string">&quot;为用户准备移动视图进行渲染&quot;</span>;</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       <span class="keyword">if</span>(site==SitePreference.NORMAL)&#123;</span><br><span class="line">           <span class="keyword">return</span> <span class="string">&quot;为用户准备PC视图进行渲染&quot;</span>;</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       <span class="keyword">if</span>(site==SitePreference.TABLET)&#123;</span><br><span class="line">           <span class="keyword">return</span><span class="string">&quot;为用户准备平板视图进行渲染&quot;</span>;</span><br><span class="line">       &#125;</span><br><span class="line">      <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-
-<p> 2.6 站点切换</p>
-<p>      如果你想将移动用户和PC用户放在二个不同的站点进行如PC用户访问 example.com  移动用户访问example.app.com 那么可以进行如下配置进行站点切换:      </p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">mvc:interceptors</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">beans:bean</span> <span class="attr">class</span>=<span class="string">&quot;org.springframework.mobile.device.DeviceResolverHandlerInterceptor&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">beans:bean</span> <span class="attr">class</span>=<span class="string">&quot;org.springframework.mobile.device.switcher.SiteSwitcherHandlerInterceptor&quot;</span> <span class="attr">factory-method</span>=<span class="string">&quot;mDot&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">beans:constructor-arg</span> <span class="attr">value</span>=<span class="string">&quot;example.app.com&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">beans:bean</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">mvc:interceptors</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>   Spring Mobile会自动帮你进行站点切换，当然你也可以将 factory-method 设置为 “ urlPath”,那么他将会把移动用户重定向到url地址，像下面这样：</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">mvc:interceptors</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">beans:bean</span> <span class="attr">class</span>=<span class="string">&quot;org.springframework.mobile.device.DeviceResolverHandlerInterceptor&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">beans:bean</span> <span class="attr">class</span>=<span class="string">&quot;org.springframework.mobile.device.switcher.SiteSwitcherHandlerInterceptor&quot;</span> <span class="attr">factory-method</span>=<span class="string">&quot;urlPath&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">beans:constructor-arg</span> <span class="attr">value</span>=<span class="string">&quot;/m&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">beans:bean</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">mvc:interceptors</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>   Spring Mobile会帮你重定向到</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">example.app.com/m</span><br></pre></td></tr></table></figure>
-
-<p>  你也可以指定根目录在urlPath下面在加一个构造函数即可。 需要注意的是他们都会将设置的值默认注入到Cookie首选项中，并且他们在移动站点和正常站点是共享的。</p>
-
-          
+          SpringMvc扩展项目之Spring Mobile
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/10/30/%E8%83%BD%E5%A4%9F%E6%A3%80%E6%B5%8B%E5%A4%9A%E7%A7%8D%E8%AE%BE%E5%A4%87%E7%B1%BB%E5%9E%8B%E7%9A%84Spring%20Mobile/">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -809,23 +633,14 @@
 
       
         
-          
-            <span id="more"></span>
-
-<p>    在我的上一篇文章中讲述了如何以Oracle数据表和递归子查询构建多叉树以及如何查询(地址为 <a target="_blank" rel="noopener" href="http://blog.csdn.net/hellowordapi/article/details/75763432/)%EF%BC%8C">http://blog.csdn.net/hellowordapi/article/details/75763432\)，</a> 但是在我们查询出来后要把逻辑上抽象的树转换成带有层级数据的json结构，这样才能够在前端插件如Ztree或自己写的左侧栏中渲染完成业务需求。 下面是把数据库中的数据转成带有层次结构的代码。  </p>
-<p>  需要引入的jar包maven地址为(也可以不引用只是博主喜欢了用Guava)：</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.google.guava<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>guava<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>18.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>如果不引入瓜娃，只需要把Lists.newArrayList(); 改为jdk实例化List的方式即可。</p>
-<p>实体类:  </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.google.common.collect.Lists;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> net.sf.json.JSONObject;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> *  </span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zhoujie</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SidebarTree</span> &#123;</span><br><span class="line">      <span class="keyword">private</span> String url;</span><br><span class="line">      <span class="keyword">private</span> String urlname;</span><br><span class="line">      <span class="keyword">private</span> String id;  <span class="comment">//节点</span></span><br><span class="line">      <span class="keyword">private</span> String parent; <span class="comment">//父节点</span></span><br><span class="line">      <span class="keyword">private</span> <span class="type">JSONObject</span> <span class="variable">attributes</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">JSONObject</span>();   <span class="comment">//net.sf.json</span></span><br><span class="line">      <span class="keyword">private</span> List&lt;SidebarTree&gt; children= Lists.newArrayList(); <span class="comment">//存放子节点</span></span><br><span class="line">     <span class="comment">//get set </span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>核心类：  </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TreeTest</span> &#123;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> List&lt;SidebarTree&gt; <span class="title function_">formatTree</span><span class="params">(List&lt;SidebarTree&gt; list )</span>&#123;</span><br><span class="line">		SidebarTree root=<span class="keyword">new</span> <span class="title class_">SidebarTree</span>();</span><br><span class="line">		SidebarTree node=<span class="keyword">new</span> <span class="title class_">SidebarTree</span>();</span><br><span class="line">		List&lt;SidebarTree&gt; treelist=Lists.newArrayList(); <span class="comment">//拼凑好的Json数据</span></span><br><span class="line">		List&lt;SidebarTree&gt; parentNodes=Lists.newArrayList(); <span class="comment">// 存放所有父节点</span></span><br><span class="line">		</span><br><span class="line">	     <span class="keyword">if</span>(list!=<span class="literal">null</span> &amp;&amp; list.size()&gt;<span class="number">0</span>)&#123;</span><br><span class="line">	             root=list.get(<span class="number">0</span>); <span class="comment">//第一个一定是根节点 0</span></span><br><span class="line">	             </span><br><span class="line">	           <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">1</span>; i&lt;list.size(); i++)&#123;</span><br><span class="line">	        	   node=list.get(i);</span><br><span class="line">	        	   <span class="keyword">if</span>(node.getParent().equals(root.getId()))&#123; <span class="comment">//从跟节点开始遍历是不是子节点</span></span><br><span class="line">	 </span><br><span class="line">	        		   parentNodes.add(node);</span><br><span class="line">	        		   root.getChildren().add(node);</span><br><span class="line">	        	   </span><br><span class="line">	        	   &#125;<span class="keyword">else</span>&#123; <span class="comment">//获取root子节点的孩子节点</span></span><br><span class="line">	        		    getChildrenNodes(parentNodes, node); </span><br><span class="line">	 </span><br><span class="line">	        		    parentNodes.add(node);</span><br><span class="line">	        	   &#125;</span><br><span class="line">	           &#125;  </span><br><span class="line">	     &#125;</span><br><span class="line">	     treelist.add(root);</span><br><span class="line"></span><br><span class="line">	     <span class="keyword">return</span> treelist;</span><br><span class="line">	     </span><br><span class="line">	     &#125;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">getChildrenNodes</span><span class="params">(List&lt;SidebarTree&gt; parentNodes , SidebarTree node)</span>&#123;</span><br><span class="line">		 <span class="keyword">for</span>(<span class="type">int</span> i=parentNodes.size()-<span class="number">1</span>; i&gt;=<span class="number">0</span>; i--)&#123;</span><br><span class="line">			  SidebarTree pnode=parentNodes.get(i);</span><br><span class="line">			  </span><br><span class="line">			  <span class="keyword">if</span>(pnode.getId().equals(node.getParent()))&#123;</span><br><span class="line">				  pnode.getChildren().add(node);</span><br><span class="line">				  <span class="keyword">return</span>;</span><br><span class="line">			  &#125;</span><br><span class="line"></span><br><span class="line">			 </span><br><span class="line">		 &#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>最终json格式：</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">    &#123;</span><br><span class="line">        &quot;url&quot;: &quot;*&quot;,</span><br><span class="line">        &quot;urlname&quot;: &quot;系统管理&quot;,</span><br><span class="line">        &quot;id&quot;: &quot;1&quot;,</span><br><span class="line">        &quot;parent&quot;: &quot;0&quot;,</span><br><span class="line">        &quot;attributes&quot;: &#123;&#125;,</span><br><span class="line">        &quot;children&quot;: [</span><br><span class="line">            &#123;</span><br><span class="line">                &quot;url&quot;: &quot;*&quot;,</span><br><span class="line">                &quot;urlname&quot;: &quot;权限管理&quot;,</span><br><span class="line">                &quot;id&quot;: &quot;2&quot;,</span><br><span class="line">                &quot;parent&quot;: &quot;1&quot;,</span><br><span class="line">                &quot;attributes&quot;: &#123;&#125;,</span><br><span class="line">                &quot;children&quot;: [</span><br><span class="line">                    &#123;</span><br><span class="line">                        &quot;url&quot;: &quot;/permission/index&quot;,</span><br><span class="line">                        &quot;urlname&quot;: &quot;权限列表&quot;,</span><br><span class="line">                        &quot;id&quot;: &quot;4&quot;,</span><br><span class="line">                        &quot;parent&quot;: &quot;2&quot;,</span><br><span class="line">                        &quot;attributes&quot;: &#123;&#125;,</span><br><span class="line">                        &quot;children&quot;: []</span><br><span class="line">                    &#125;,</span><br><span class="line">                    &#123;</span><br><span class="line">                        &quot;url&quot;: &quot;/permission/addPermission.shtml&quot;,</span><br><span class="line">                        &quot;urlname&quot;: &quot;权限添加&quot;,</span><br><span class="line">                        &quot;id&quot;: &quot;6&quot;,</span><br><span class="line">                        &quot;parent&quot;: &quot;2&quot;,</span><br><span class="line">                        &quot;attributes&quot;: &#123;&#125;,</span><br><span class="line">                        &quot;children&quot;: []</span><br><span class="line">                    &#125;,</span><br><span class="line">                    &#123;</span><br><span class="line">                        &quot;url&quot;: &quot;/permission/deletePermissionById&quot;,</span><br><span class="line">                        &quot;urlname&quot;: &quot;权限删除&quot;,</span><br><span class="line">                        &quot;id&quot;: &quot;7&quot;,</span><br><span class="line">                        &quot;parent&quot;: &quot;2&quot;,</span><br><span class="line">                        &quot;attributes&quot;: &#123;&#125;,</span><br><span class="line">                        &quot;children&quot;: []</span><br><span class="line">                    &#125;,</span><br><span class="line">                    &#123;</span><br><span class="line">                        &quot;url&quot;: &quot;/permission/addPermission2Role&quot;,</span><br><span class="line">                        &quot;urlname&quot;: &quot;权限分配&quot;,</span><br><span class="line">                        &quot;id&quot;: &quot;13&quot;,</span><br><span class="line">                        &quot;parent&quot;: &quot;2&quot;,</span><br><span class="line">                        &quot;attributes&quot;: &#123;&#125;,</span><br><span class="line">                        &quot;children&quot;: []</span><br><span class="line">                    &#125;,</span><br><span class="line">                    &#123;</span><br><span class="line">                        &quot;url&quot;: &quot;/permission/allocation&quot;,</span><br><span class="line">                        &quot;urlname&quot;: &quot;权限分配2&quot;,</span><br><span class="line">                        &quot;id&quot;: &quot;19&quot;,</span><br><span class="line">                        &quot;parent&quot;: &quot;2&quot;,</span><br><span class="line">                        &quot;attributes&quot;: &#123;&#125;,</span><br><span class="line">                        &quot;children&quot;: []</span><br><span class="line">                    &#125;</span><br><span class="line">                ]</span><br><span class="line">            &#125;,</span><br><span class="line">            &#123;</span><br><span class="line">                &quot;url&quot;: &quot;*&quot;,</span><br><span class="line">                &quot;urlname&quot;: &quot;用户管理&quot;,</span><br><span class="line">                &quot;id&quot;: &quot;22&quot;,</span><br><span class="line">                &quot;parent&quot;: &quot;1&quot;,</span><br><span class="line">                &quot;attributes&quot;: &#123;&#125;,</span><br><span class="line">                &quot;children&quot;: [</span><br><span class="line">                    &#123;</span><br><span class="line">                        &quot;url&quot;: &quot;/member/list.shtml&quot;,</span><br><span class="line">                        &quot;urlname&quot;: &quot;用户列表&quot;,</span><br><span class="line">                        &quot;id&quot;: &quot;8&quot;,</span><br><span class="line">                        &quot;parent&quot;: &quot;22&quot;,</span><br><span class="line">                        &quot;attributes&quot;: &#123;&#125;,</span><br><span class="line">                        &quot;children&quot;: []</span><br><span class="line">                    &#125;,</span><br><span class="line">                    &#123;</span><br><span class="line">                        &quot;url&quot;: &quot;/member/online.shtml&quot;,</span><br><span class="line">                        &quot;urlname&quot;: &quot;在线用户&quot;,</span><br><span class="line">                        &quot;id&quot;: &quot;9&quot;,</span><br><span class="line">                        &quot;parent&quot;: &quot;22&quot;,</span><br><span class="line">                        &quot;attributes&quot;: &#123;&#125;,</span><br><span class="line">                        &quot;children&quot;: []</span><br><span class="line">                    &#125;,</span><br><span class="line">                    &#123;</span><br><span class="line">                        &quot;url&quot;: &quot;/member/changeSessionStatus&quot;,</span><br><span class="line">                        &quot;urlname&quot;: &quot;用户Session踢出&quot;,</span><br><span class="line">                        &quot;id&quot;: &quot;10&quot;,</span><br><span class="line">                        &quot;parent&quot;: &quot;22&quot;,</span><br><span class="line">                        &quot;attributes&quot;: &#123;&#125;,</span><br><span class="line">                        &quot;children&quot;: []</span><br><span class="line">                    &#125;,</span><br><span class="line">                    &#123;</span><br><span class="line">                        &quot;url&quot;: &quot;/member/forbidUserById&quot;,</span><br><span class="line">                        &quot;urlname&quot;: &quot;用户激活or禁止&quot;,</span><br><span class="line">                        &quot;id&quot;: &quot;11&quot;,</span><br><span class="line">                        &quot;parent&quot;: &quot;22&quot;,</span><br><span class="line">                        &quot;attributes&quot;: &#123;&#125;,</span><br><span class="line">                        &quot;children&quot;: []</span><br><span class="line">                    &#125;,</span><br><span class="line">                    &#123;</span><br><span class="line">                        &quot;url&quot;: &quot;/member/deleteUserById&quot;,</span><br><span class="line">                        &quot;urlname&quot;: &quot;用户删除&quot;,</span><br><span class="line">                        &quot;id&quot;: &quot;12&quot;,</span><br><span class="line">                        &quot;parent&quot;: &quot;22&quot;,</span><br><span class="line">                        &quot;attributes&quot;: &#123;&#125;,</span><br><span class="line">                        &quot;children&quot;: []</span><br><span class="line">                    &#125;</span><br><span class="line">                ]</span><br><span class="line">            &#125;,</span><br><span class="line">            &#123;</span><br><span class="line">                &quot;url&quot;: &quot;*&quot;,</span><br><span class="line">                &quot;urlname&quot;: &quot;角色管理&quot;,</span><br><span class="line">                &quot;id&quot;: &quot;23&quot;,</span><br><span class="line">                &quot;parent&quot;: &quot;1&quot;,</span><br><span class="line">                &quot;attributes&quot;: &#123;&#125;,</span><br><span class="line">                &quot;children&quot;: [</span><br><span class="line">                    &#123;</span><br><span class="line">                        &quot;url&quot;: &quot;/role/clearRoleByUserIds&quot;,</span><br><span class="line">                        &quot;urlname&quot;: &quot;用户角色分配清空&quot;,</span><br><span class="line">                        &quot;id&quot;: &quot;14&quot;,</span><br><span class="line">                        &quot;parent&quot;: &quot;23&quot;,</span><br><span class="line">                        &quot;attributes&quot;: &#123;&#125;,</span><br><span class="line">                        &quot;children&quot;: []</span><br><span class="line">                    &#125;,</span><br><span class="line">                    &#123;</span><br><span class="line">                        &quot;url&quot;: &quot;/role/addRole2User&quot;,</span><br><span class="line">                        &quot;urlname&quot;: &quot;角色分配保存&quot;,</span><br><span class="line">                        &quot;id&quot;: &quot;15&quot;,</span><br><span class="line">                        &quot;parent&quot;: &quot;23&quot;,</span><br><span class="line">                        &quot;attributes&quot;: &#123;&#125;,</span><br><span class="line">                        &quot;children&quot;: []</span><br><span class="line">                    &#125;,</span><br><span class="line">                    &#123;</span><br><span class="line">                        &quot;url&quot;: &quot;/role/deleteRoleById.shtml&quot;,</span><br><span class="line">                        &quot;urlname&quot;: &quot;角色列表删除&quot;,</span><br><span class="line">                        &quot;id&quot;: &quot;16&quot;,</span><br><span class="line">                        &quot;parent&quot;: &quot;23&quot;,</span><br><span class="line">                        &quot;attributes&quot;: &#123;&#125;,</span><br><span class="line">                        &quot;children&quot;: []</span><br><span class="line">                    &#125;,</span><br><span class="line">                    &#123;</span><br><span class="line">                        &quot;url&quot;: &quot;/role/addRole&quot;,</span><br><span class="line">                        &quot;urlname&quot;: &quot;角色列表添加&quot;,</span><br><span class="line">                        &quot;id&quot;: &quot;17&quot;,</span><br><span class="line">                        &quot;parent&quot;: &quot;23&quot;,</span><br><span class="line">                        &quot;attributes&quot;: &#123;&#125;,</span><br><span class="line">                        &quot;children&quot;: []</span><br><span class="line">                    &#125;,</span><br><span class="line">                    &#123;</span><br><span class="line">                        &quot;url&quot;: &quot;role/index&quot;,</span><br><span class="line">                        &quot;urlname&quot;: &quot;角色列表&quot;,</span><br><span class="line">                        &quot;id&quot;: &quot;18&quot;,</span><br><span class="line">                        &quot;parent&quot;: &quot;23&quot;,</span><br><span class="line">                        &quot;attributes&quot;: &#123;&#125;,</span><br><span class="line">                        &quot;children&quot;: []</span><br><span class="line">                    &#125;,</span><br><span class="line">                    &#123;</span><br><span class="line">                        &quot;url&quot;: &quot;/role/allocation&quot;,</span><br><span class="line">                        &quot;urlname&quot;: &quot;角色分配&quot;,</span><br><span class="line">                        &quot;id&quot;: &quot;20&quot;,</span><br><span class="line">                        &quot;parent&quot;: &quot;23&quot;,</span><br><span class="line">                        &quot;attributes&quot;: &#123;&#125;,</span><br><span class="line">                        &quot;children&quot;: []</span><br><span class="line">                    &#125;</span><br><span class="line">                ]</span><br><span class="line">            &#125;</span><br><span class="line">        ]</span><br><span class="line">    &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
-          
+          Java集合之List实践
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/07/24/%E7%94%A8List%E6%9E%84%E5%BB%BA%E5%B8%A6%E6%9C%89%E5%B1%82%E6%AC%A1%E7%BB%93%E6%9E%84%E7%9A%84json%E6%95%B0%E6%8D%AE/">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -964,71 +779,14 @@
 
       
         
-          
-            <span id="more"></span>
-
-<p>       在平常的业务系统开发中，我们经常需要设计数据层次关系，如在经典的user-role-permission权限设计中， 需要对权限表的数据设计成一种层次依赖关系，如最顶层的为系统管理，系统管理的下一层为角色 管理，角色管理的下一层又为角色的CRUD操作， 那么这种表就可以抽象成为数据结构里面的B树. 如下表 :</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> &quot;U_PERMISSION&quot; </span><br><span class="line">   (	&quot;ID&quot; NUMBER(<span class="number">20</span>,<span class="number">0</span>), </span><br><span class="line">	&quot;URL&quot; VARCHAR2(<span class="number">256</span> BYTE), </span><br><span class="line">	&quot;NAME&quot; VARCHAR2(<span class="number">50</span> BYTE), </span><br><span class="line">	&quot;PARENT&quot; NUMBER(<span class="number">20</span>,<span class="number">0</span>)</span><br><span class="line">   ) </span><br></pre></td></tr></table></figure>
-
-<p>在上表中 id表示当前树的节点。url, name表示可访问的url路径，name表示url描述。 parent表示当前节点的父节点 ，如果当前节点是跟节点则parent用0表示(别用NULL违反了数据库约束)。 那么上面的表就可以抽象成如下图.</p>
-<p><img src="/../../images/img3.jpg" alt="Alt text"></p>
-<p>接着我们插入测试数据 :</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">1</span>,<span class="string">&#x27;*&#x27;</span>,<span class="string">&#x27;系统管理&#x27;</span>,<span class="number">0</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">2</span>,<span class="string">&#x27;*&#x27;</span>,<span class="string">&#x27;权限管理&#x27;</span>,<span class="number">1</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">20</span>,<span class="string">&#x27;/role/allocation&#x27;</span>,<span class="string">&#x27;角色分配&#x27;</span>,<span class="number">23</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">4</span>,<span class="string">&#x27;/permission/index&#x27;</span>,<span class="string">&#x27;权限列表&#x27;</span>,<span class="number">2</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">6</span>,<span class="string">&#x27;/permission/addPermission.shtml&#x27;</span>,<span class="string">&#x27;权限添加&#x27;</span>,<span class="number">2</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">7</span>,<span class="string">&#x27;/permission/deletePermissionById&#x27;</span>,<span class="string">&#x27;权限删除&#x27;</span>,<span class="number">2</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">8</span>,<span class="string">&#x27;/member/list.shtml&#x27;</span>,<span class="string">&#x27;用户列表&#x27;</span>,<span class="number">22</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">9</span>,<span class="string">&#x27;/member/online.shtml&#x27;</span>,<span class="string">&#x27;在线用户&#x27;</span>,<span class="number">22</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">10</span>,<span class="string">&#x27;/member/changeSessionStatus&#x27;</span>,<span class="string">&#x27;用户Session踢出&#x27;</span>,<span class="number">22</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">11</span>,<span class="string">&#x27;/member/forbidUserById&#x27;</span>,<span class="string">&#x27;用户激活or禁止&#x27;</span>,<span class="number">22</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">12</span>,<span class="string">&#x27;/member/deleteUserById&#x27;</span>,<span class="string">&#x27;用户删除&#x27;</span>,<span class="number">22</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">13</span>,<span class="string">&#x27;/permission/addPermission2Role&#x27;</span>,<span class="string">&#x27;权限分配&#x27;</span>,<span class="number">2</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">14</span>,<span class="string">&#x27;/role/clearRoleByUserIds&#x27;</span>,<span class="string">&#x27;用户角色分配清空&#x27;</span>,<span class="number">23</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">15</span>,<span class="string">&#x27;/role/addRole2User&#x27;</span>,<span class="string">&#x27;角色分配保存&#x27;</span>,<span class="number">23</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">16</span>,<span class="string">&#x27;/role/deleteRoleById.shtml&#x27;</span>,<span class="string">&#x27;角色列表删除&#x27;</span>,<span class="number">23</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">17</span>,<span class="string">&#x27;/role/addRole&#x27;</span>,<span class="string">&#x27;角色列表添加&#x27;</span>,<span class="number">23</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">18</span>,<span class="string">&#x27;role/index&#x27;</span>,<span class="string">&#x27;角色列表&#x27;</span>,<span class="number">23</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">19</span>,<span class="string">&#x27;/permission/allocation&#x27;</span>,<span class="string">&#x27;权限分配2&#x27;</span>,<span class="number">2</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">22</span>,<span class="string">&#x27;*&#x27;</span>,<span class="string">&#x27;用户管理&#x27;</span>,<span class="number">1</span>);</span><br><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> U_PERMISSION (ID,URL,NAME,PARENT) <span class="keyword">values</span> (<span class="number">23</span>,<span class="string">&#x27;*&#x27;</span>,<span class="string">&#x27;角色管理&#x27;</span>,<span class="number">1</span>);</span><br></pre></td></tr></table></figure>
-
-<p>既然都已经创建树形表了那么肯定要对树进行操作。就像我们在大学的数据结构一书中所做的那样对树进行递归遍历(前序，中序，后序. 忘记了的面壁….) 在oralce中通过</p>
-<p>start with….connect by…prior语法，依托该语法我们就可以对上面树形表进行递归遍历。</p>
-<p>示例:</p>
-<p>  给出一个节点的值，求出的他父节点和祖宗节点：</p>
-<p><img src="/../../images/img4.jpg" alt="Alt text">
-         </p>
-<p>start with子句： 递归的条件，需要注意的是如果with后面的值是子节点那么求出的就是他的父节点和祖宗节点，如果是父节点那么求出的就是他的子节点和子孙节点，</p>
-<p>                             如果不懂可以把上面start with 后面的条件改成 p.parent&#x3D;0，就可以理解了。</p>
-<p>connect by子句：连接条件。 关键词prior，prior跟它右边的父节点放在一起(prior p.parent)表示往父节点方向遍历, 反之，如果 prior跟子节点放在一起(prior p.id)表示往</p>
-<p>                             叶子方向遍历。 这里需要注意的 &#x3D;p.id 放在prior关键词的前面或者后面都没什么关系，也就是上面可以这样写 p.id&#x3D; prior p.paren。重要的是prior旁边放的</p>
-<p>                             是什么。</p>
-<p>level伪列： 递归的层次表示， 用来进行输出缩进。可以看到递归层次，看起来很直观。 需要注意的是Level 也可以放在Group by后面，也可以放在select 后面.</p>
-<p>下面我来讲一下递归语法的一些用法和一些需要注意的地方：</p>
-<p>             有趣的是我们可以不使用start with 子句，它不像程序语言一样不写就会造成死循环（插一句嘴,曾经有一人和我聊天提到SQL不是编程语言，因为他不满足图灵完全。因为他并不能造成死循环，其实通过递归语句就可以，这个坑我会在后面演示，在本文中并不讨论SQL是不是编程语言）。它只会把会整个表的数据遍历一遍，每一个数据做一次</p>
-<p>根节点，然后遍历树中的其他节点。</p>
-<p> !<img src="/../../images/img5.jpg" alt="Alt text"></p>
-<p>他等价于如下SQL：</p>
-<p> </p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span>  p.ID,p.NAME,p.PARENT, level <span class="keyword">from</span> u_permission p <span class="keyword">start</span> <span class="keyword">with</span> p.PARENT <span class="keyword">in</span>( <span class="string">&#x27;祖宗节点&#x27;</span>,<span class="string">&#x27;父节点&#x27;</span>,<span class="string">&#x27;子节点&#x27;</span>,<span class="string">&#x27;孙子节点&#x27;</span> ) <span class="keyword">connect</span> <span class="keyword">by</span> p.id<span class="operator">=</span> prior p.parent;</span><br></pre></td></tr></table></figure>
-
-<p>2. start with 和connect by prior的位置可以互换:     </p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span>  p.ID,p.NAME,p.PARENT, level <span class="keyword">from</span> u_permission p <span class="keyword">start</span> <span class="keyword">with</span> p.PARENT<span class="operator">=</span><span class="number">1</span> <span class="keyword">connect</span> <span class="keyword">by</span> p.id<span class="operator">=</span> prior p.parent;</span><br><span class="line"><span class="keyword">select</span>  p.ID,p.NAME,p.PARENT, level <span class="keyword">from</span> u_permission p  <span class="keyword">connect</span> <span class="keyword">by</span> p.id<span class="operator">=</span> prior p.parent <span class="keyword">start</span> <span class="keyword">with</span> p.PARENT<span class="operator">=</span><span class="number">1</span>;</span><br></pre></td></tr></table></figure>
-
-<p>上面二条的SQL意思是一样的。</p>
-<p>3.我们可以把start with看成是一个where，所以这也意味着我们可以在我们可以在除了最后部分以外的地方加where条件， 如：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span>  p.ID,p.NAME,p.PARENT, level <span class="keyword">from</span> u_permission p <span class="keyword">where</span> p.id<span class="operator">=</span>xxx <span class="keyword">start</span> <span class="keyword">with</span> p.PARENT<span class="operator">=</span><span class="number">1</span> <span class="keyword">connect</span> <span class="keyword">by</span> p.id<span class="operator">=</span> prior p.parent;</span><br></pre></td></tr></table></figure>
-
-<p>但是这里隐藏着一个坑， where条件的作用域不是在递归查询中的，而是在递归查询完后的。 所以如果理解不当他可以造成死循环（虽然会检测出来报ORA错误)也就是a的父节点是b, b的父节点是a。</p>
-<p>看一个实用的列子:  </p>
-<p>    如果有一个需求如根据user表的id查出他的权限树，这个时候我们就需要start with后面加子查询。</p>
-<p><img src="/../../images/img6.jpg" alt="Alt text"></p>
-<p>          </p>
-<p>    我们可以看到根据子查询返回的根节点查出所有子节点的父亲节点和祖宗节点。  </p>
-<p>下面是一些跟递归语法相关的函数(来自Oracle SQL高级编程)：</p>
-<p>      SYS_CINNECT_BY_PATH函数：</p>
-<p>              这个函数是用来返回组成层级的直到当前行的值, 我一图胜千言把。</p>
-<p><img src="/../../images/img7.jpg" alt="Alt text"></p>
-<p>    简单来说就是用来做拼接的，至于想拼接什么看各位看官的心情咯。</p>
-<p>CONNECT_BY_ISLEAF伪列：</p>
-<p>         这个伪列呢，说直白一点跟level的作用差不多，只不过他是用来在递归查询中显示叶子节点而非递归深度。 留给看官实验，不上传实验图片了。</p>
-<p>CONNECT_BY_ISCYCLE伪列 和NOCYCLE：</p>
-<p>          这个函数用于检测树中是不是出现了环，传统的数据结构树是不会出现环的，只有在图中才会出现环。 而在数据库中我说过，他不是正儿八经</p>
-<p>        的B树，他可能会出现一些不合人伦的事情，比如就像上面所说的死循环, a是b的父亲，b又叫a儿子这样尴尬的事情，Oracle会直接报出ORA-1436的</p>
-<p>        错误，告诉你这样不太好。 所以我们可以用nocycle函数解决这个问题，也就是让b当儿子。使得SQL符合逻辑。</p>
-<p>   </p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span>  connect_by_isleaf ,p.ID,p.NAME,p.PARENT, CONNECT_BY_ISCYCLE , level <span class="keyword">from</span> u_permission p  <span class="keyword">start</span> <span class="keyword">with</span>  p.PARENT<span class="operator">=</span><span class="number">1</span> <span class="keyword">connect</span> <span class="keyword">by</span> nocycle p.id<span class="operator">=</span> prior p.parent;</span><br></pre></td></tr></table></figure>
-
-<p>connect_by_isleaf  函数:  </p>
-<p>       在递归中检测当前节点是否包含下级节点，也就是说是不是叶子节点，是返回0， 不是返回1，  在动态的目录中有用。       </p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span>  connect_by_isleaf ,p.ID,p.NAME,p.PARENT, level <span class="keyword">from</span> u_permission p  <span class="keyword">start</span> <span class="keyword">with</span> p.PARENT <span class="keyword">is</span> <span class="keyword">null</span> <span class="keyword">connect</span> <span class="keyword">by</span> p.id<span class="operator">=</span> prior p.parent;</span><br></pre></td></tr></table></figure>
-
-<p>关于Oracle递归和树形表就介绍到这里了，下次给大家分享用SQL实现有向图。</p>
-
-          
+          oracle递归实现组织树
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/07/22/Oracle%E6%A0%91%E5%BD%A2%E8%A1%A8%E5%92%8C%E9%80%92%E5%BD%92%E6%9F%A5%E8%AF%A2/">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1167,19 +925,14 @@
 
       
         
-          
-            <span id="more"></span>
-
-<p>最近在做一个老系统，由于表的信息不明确， 在数据库拿二个表的时候产生了笛卡尔联结，由于重复数据只有三条.　而这二个表的列数据比较固定．　所以决定取出来在后端去重。 数据类型是以List&lt;HashMap&gt; 进行接收的。 现在我把它合并成一条HashMap(然而后来我们没有采用这种方式, 只是记录下来突如其来的想法 ~). 测试代码如下：   </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.HashSet;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Test</span> &#123;</span><br><span class="line">	</span><br><span class="line">	 <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testMergeMap</span><span class="params">()</span>&#123;</span><br><span class="line">	        List&lt;Map&lt;String, String&gt;&gt; list = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">	        Map&lt;String, String&gt; m1 = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">	        m1.put(<span class="string">&quot;fruits&quot;</span>, <span class="string">&quot;apple&quot;</span>);</span><br><span class="line">	        m1.put(<span class="string">&quot;others&quot;</span>, <span class="string">&quot;hahaha&quot;</span>);</span><br><span class="line">	        list.add(m1);</span><br><span class="line"></span><br><span class="line">	        Map&lt;String, String&gt; m2 = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">	        m2.put(<span class="string">&quot;fruits&quot;</span>, <span class="string">&quot;orange&quot;</span>);</span><br><span class="line">	        list.add(m2);</span><br><span class="line"></span><br><span class="line">	        Map&lt;String, String&gt; m3 = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">	        m3.put(<span class="string">&quot;fruits&quot;</span>, <span class="string">&quot;pear&quot;</span>);</span><br><span class="line">	        list.add(m3);</span><br><span class="line"></span><br><span class="line">	        Map&lt;String, HashSet&lt;String&gt;&gt; mergeMap = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">	        <span class="keyword">for</span>(Map&lt;String, String&gt; map : list)&#123;</span><br><span class="line">	            <span class="keyword">if</span>(map == <span class="literal">null</span>)&#123;</span><br><span class="line">	                <span class="keyword">continue</span>;</span><br><span class="line">	            &#125;</span><br><span class="line">	            <span class="keyword">for</span>(Map.Entry entry : map.entrySet())&#123;</span><br><span class="line">	                mergeMap.computeIfAbsent((String)entry.getKey(), k -&gt; genValue(k)).add((String)entry.getValue());</span><br><span class="line">	            &#125;</span><br><span class="line">	        &#125;</span><br><span class="line"></span><br><span class="line">	        System.out.println(mergeMap.toString());</span><br><span class="line">	    &#125;</span><br><span class="line"></span><br><span class="line">	    <span class="keyword">static</span> HashSet&lt;String&gt; <span class="title function_">genValue</span><span class="params">(String str)</span> &#123;</span><br><span class="line">	        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">HashSet</span>&lt;String&gt;();</span><br><span class="line">	    &#125;  </span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">		 Test test= <span class="keyword">new</span> <span class="title class_">Test</span>();</span><br><span class="line">		 </span><br><span class="line">		  test.testMergeMap();</span><br><span class="line">	&#125;	</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>这里重点记录一下computeIfAbsent, 这是1.8Map接口中新增的一个方法，作者的本意是将他作为本地缓存， 在1.8的HashMap ConcurrentHashMap中都可以看到他的身影， 方法签名如下：</p>
-<p>           public V computeIfAbsent(K key, Function&lt;? super K,? extends V&gt; mappingFunction)  </p>
-<p>返回的值是你添加进去的元素的值。</p>
-<p>此方法首先判断缓存map中是否存在指定的key值, 如果不存在会调用mappingFunction计算key的value,然后将key&#x3D;value放入到缓存map中, java1.8会采用thread-safe的方式</p>
-<p>从cache中存取记录.   1.8以前的putifAbsent也可以实现这种需求。 但是computeIfAbsent可以将一些逻辑或者限制条件写在mappingFunction里面。简单的如下：（以判断斐波那契数列为列）</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Fibonacc</span> &#123;</span><br><span class="line"></span><br><span class="line">	   <span class="keyword">static</span> Map&lt;Integer, Integer&gt; cache = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;(); </span><br><span class="line">	   </span><br><span class="line">	   <span class="keyword">static</span> <span class="type">int</span> <span class="title function_">cachefibonacc</span><span class="params">(<span class="type">int</span> n)</span>&#123;</span><br><span class="line">		   </span><br><span class="line">		   <span class="keyword">return</span> cache.computeIfAbsent(n, (value) -&gt; &#123;  </span><br><span class="line">	            System.out.println(<span class="string">&quot;cache &quot;</span> + n);  </span><br><span class="line">	            <span class="keyword">return</span> cachefibonacc(n - <span class="number">2</span>) + cachefibonacc(n - <span class="number">1</span>);  </span><br><span class="line">	        &#125;);  </span><br><span class="line">	   &#125;</span><br><span class="line">	   </span><br><span class="line">	   <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">	        cache.put(<span class="number">1</span>, <span class="number">1</span>);  </span><br><span class="line">	         </span><br><span class="line">		 cachefibonacc(<span class="number">7</span>); </span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-          
+          java1.8 HashMap新增的语法实践
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/03/23/%E4%BD%BF%E7%94%A8jdk1.8%E5%8E%BB%E9%99%A4%E9%80%BB%E8%BE%91%E4%B8%8A%E9%87%8D%E5%A4%8D%E7%9A%84HashMap%E7%9A%84value%E4%BB%A5%E5%8F%8A%E6%9E%84%E5%BB%BA%E6%9C%AC%E5%9C%B0%E7%BC%93/">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1318,40 +1071,14 @@
 
       
         
-          
-            <span id="more"></span>
-
-<p>今天一位朋友在用迭代器时很郁闷为什么会会报<a target="_blank" rel="noopener" href="http://lib.csdn.net/base/javase" title="Java SE知识库">Java</a>.util.ConcurrentModificationExceptiond异常， 于是写下这篇博客，想详细的讲讲Java里面  的迭代器.</p>
-<p>           Iterator简单的来说就是遍历， 遍历什么？ 遍历集合元素等.  </p>
-<p>          Iterator接口共有四个方法：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">Iterator</span>&lt;E&gt;&#123;</span><br><span class="line"></span><br><span class="line">　      <span class="type">boolean</span> <span class="title function_">hasNext</span><span class="params">()</span>：如果被迭代的集合还元素没有被遍历，则返回<span class="literal">true</span>。</span><br><span class="line">　　　　Object <span class="title function_">next</span><span class="params">()</span>：返回集合里下一个元素。</span><br><span class="line">　　　　<span class="keyword">void</span> <span class="title function_">remove</span><span class="params">()</span> ：删除集合里上一次next方法返回的元素</span><br><span class="line">　　　　<span class="keyword">void</span> <span class="title function_">forEachRemaining</span><span class="params">(Consumer action)</span>，这是Java <span class="number">8</span>为Iterator新增的默认方法，该方法可使用Lambda表达式来遍历集合元素。</span><br><span class="line">&#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p> 如果只是普通的迭代输出，那么不会出现什么问题.但是在现实需求中这往往没有什么用，我们还需要做一些额外的操作，比如说</p>
-<p> add&#x2F;remove等。 但是这样做很可能会出现一些很尴尬的事情， 下面我给出一段正确的迭代删除代码:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TestIterator</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 创建集合、添加元素</span></span><br><span class="line">        Collection&lt;String&gt; books = <span class="keyword">new</span> <span class="title class_">ArrayList</span>();</span><br><span class="line">        books.add(<span class="string">&quot;测试1&quot;</span>);</span><br><span class="line">        books.add(<span class="string">&quot;测试2&quot;</span>);</span><br><span class="line">        books.add(<span class="string">&quot;测试3&quot;</span>);</span><br><span class="line">   </span><br><span class="line">        <span class="type">Iterator</span> <span class="variable">it</span> <span class="operator">=</span> books.iterator();</span><br><span class="line">        <span class="keyword">while</span>(it.hasNext())</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// it.next()方法返回的数据类型是Object类型，因此需要强制类型转换</span></span><br><span class="line">            <span class="type">String</span> <span class="variable">book</span> <span class="operator">=</span> (String)it.next();</span><br><span class="line">            System.out.println(book);</span><br><span class="line">            <span class="keyword">if</span> (book.equals(<span class="string">&quot;测试2&quot;</span>))</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">// 从集合中删除上一次next方法返回的元素</span></span><br><span class="line">                it.remove();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(books);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>上面的代码经过测试是可以正确删除元素的,有疑问的代码估计也就是这一句了</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Iterator</span> <span class="variable">it</span> <span class="operator">=</span> books.iterator();</span><br></pre></td></tr></table></figure>
-
-<p>这段代码的意思是  获得List对象的迭代器，  然后通过迭代器来遍历List对象内保存的元素.</p>
-<p>接着我们就可以调用他的 hasNext方法和next方法去操作他了.</p>
-<p>接着贴出一段错误的代码这是在我工作机上面测试的代码 jdk是1.8 (当然我相信以前的jdk结果应该也是这样):</p>
-<p><img src="/../../images/img8.jpg" alt="Alt text"></p>
-<p> </p>
-<p>那么为什么二种删除方式一个有错一个没错呢(这个问题难倒了工作三年的一个朋友).  经过刚刚的测试，我们发现用迭代器本身删除是可以的，但是在迭代器中</p>
-<p>对list本身进行删除就不行了， 对于这种莫名其妙的问题，我们从源码入手， 首先根据上面的我们先看看ArrayList他是怎么返回Iterator实例的，最终源码如下：</p>
-<p><img src="/../../images/img9.jpg" alt="Alt text"></p>
-<p> 在ArrayList类中有一个私有类Private Itr 我们注意到expectedModCount这个字段，他的初始值是等于modCount的。 那modCount又是干啥的呢 最直接的。 看源码：</p>
-<p><img src="/../../images/img10.jpg" alt="Alt text"></p>
-<p>我们从源码可以对集合的每一次 add &#x2F; remove 都会触发一下这个字段，而上面Itr的remove 不管在删除还是添加都会触发一个方法(csdn上截图太麻烦我直接写了 )   checkForComodification();这个方法， 大家可以看看上面的截图而这个 checkForComodification();方法中只有一个功能</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (modCount != expectedModCount)</span><br><span class="line">               <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">ConcurrentModificationException</span>();</span><br></pre></td></tr></table></figure>
-
-<p> 那就是抛出异常~~~~</p>
-<p>所以大家应该懂了那段错误的代码为什么会错误了吧。。 因为二个字段不相等啊。 没有同步啊。</p>
-<p>如果你问我为什么要这么做,我只能这么跟你说：</p>
-<p>Iterator 是工作在一个独立的线程中，并且拥有一个 mutex 锁。 Iterator 被创建之后会建立一个指向原来对象的单链索引表，当原来的对象数量发生变化时，这个索引表的内容不会同步改变，所以当索引指针往后移动的时候就找不到要迭代的对象，所以按照 fail-fast 原则 Iterator 会马上抛出 java.util.ConcurrentModificationException 异常。<br>所以 Iterator 在工作的时候是不允许被迭代的对象被改变的。但你可以使用 Iterator 本身的方法 remove() 来删除对象， Iterator.remove() 方法会在删除当前迭代对象的同时维护索引的一致性</p>
-
-          
+          java 迭代器
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/01/08/Java%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%20-%20%E8%BF%AD%E4%BB%A3%E5%99%A8%20Iterator%20%E6%80%BB%E7%BB%93/">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1490,35 +1217,14 @@
 
       
         
-          
-            <span id="more"></span>
-
-<p>基础语法及概念:</p>
-<p>       java中的异常处理主要围绕着 try-catch-finally  throw  throws展开， java异常共分为运行时异常(Runtime Exception ) 和 非运行时异常（Checked Exception）， 或者称之为</p>
-<p>    受检查异常。  Java中所有的异常， 都继承至 Throwable. 其中Error类也继承至Throwable类， 不过若是发生这个原因， 就不能称之为异常了， 发生了Error异常，一般是Java</p>
-<p>    系统在运行时发生了错误， 比如说运行堆内存不足, 程序发生了死锁。 除了将错误信息发回给用户外， 就已经没救了.</p>
-<p>   Runtime Exception:</p>
-<p>                运行时异常可以由用户造成， 也可以由本身的编码导致， 比如说ArrayIndexout… 数组越界异常， 或者用户输入了空值导致发生了nullPointerException空指针异常， 或 者在运行时找不到类 ClassNotFoundException 等.  运行时异常往往是最难处理的， 因为你不知道他会在什么时候发生， 有可能是你自己的代码触发，也可能是用户的输入触发。 他在语法上不需要声明抛出异常。</p>
-<p>Checked Exception:</p>
-<p>           受检查异常需要 try catch  或者 抛出去(throws ).  他一般表示程序有可能会在编译时期发生不确定的行为， 比如读写IO 数据库连接 或者装载一个类， 他们都需要程序员</p>
-<p>         显示的 try catch finally,  其中finally 是 不管有没有发生异常都必须要执行的一个操作， 其一般用在关闭数据库连接， 关闭文件连接 等.  </p>
-<p>异常处理的规范：</p>
-<p>           咋地一看好像异常处理为程序健壮性提供了很大的方便， 但是我们只有在不得以的情况下才声明或者抛出异常。   你必考虑到异常也是API的一部分，这意味着</p>
-<p>           如果你在写一个对外调用的接口， 比如说下面这样 声明他可能抛出的异常.</p>
-<p>            </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span>  <span class="title class_">demo</span> <span class="keyword">throws</span>  Exception&#123;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">public</span>  <span class="keyword">void</span> <span class="title function_">demo1</span><span class="params">()</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p> 这就意味着你在很长一段时间都无法摆脱这个异常,以后你要重构或进一步开发这些 API 时，不得不考虑这些异常带来的向后兼容性问题。因为，如果你在日后的版本中删除了某个异常的声明，就会造成之前用户的代码无法通过编译。 所以我们应该仔细设计可能发生的异常,</p>
-<p>异常处理规范2：</p>
-<p>异常处理的难点主要是在对于什么时候处理异常的理解上。在不同的层级上，你要考虑这个异常是不是应该在这个层级上进行处理，还是说应该继续向上抛出，甚至某些情况下还需要包装捕获到的异常，再向上抛出。</p>
-<p><strong>不同抽象层级上的代码应该只声明抛出同一层级上的异常。</strong></p>
-<p>就像处理界面（Controller）的代码不应该还会捕获处理数据库操作的异常一样(Service and dao)。 为了避免这个问题，更高层次的实现需要捕获低层次的异常，包装之后再抛出属于更高层次的异常,这种做法被称为异常转换:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125; <span class="keyword">catch</span>(LowerLevelException e) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">HigherLevelException</span>(...);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>try catch块应该尽量缩小， 简洁明了的声明哪行代码可能发生异常，并且尝试着把 try catch 作为一个流程， 千万不要catch 之后什么都不做， 比如说就记录一个</p>
-<p>日志 或者打印Message </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">String parm; </span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    param = jsonObj.getString(<span class="string">&quot;parm&quot;</span>);</span><br><span class="line">&#125; <span class="keyword">catch</span> (JSONException e) &#123;</span><br><span class="line">    e.printStackTrace();</span><br><span class="line">    param = <span class="string">&quot;default value&quot;</span>;    <span class="comment">//提供一个默认值</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-          
+          java中的异常处理机制
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2016/12/01/Java%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1657,184 +1363,14 @@
 
       
         
-          
-            <span id="more"></span>
-
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#!/usr/bin/python  </span></span><br><span class="line"><span class="comment"># -*- coding: cp936 -*-  </span></span><br><span class="line"><span class="comment">#python ver2.7  </span></span><br><span class="line">  </span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;&#x27;&#x27; </span></span><br><span class="line"><span class="string">闭包(closure)是函数式编程的重要的语法结构。函数式编程是一种编程范式 (而面向过程编程和面向对象编程也都是编程范式)。在面向过程编程中，我们见到过函数(function)；在面向对象编程中，我们见过对象(object)。函数和对象的根本目的是以某种逻辑方式组织代码，并提高代码的可重复使用性(reusability)。闭包也是一种组织代码的结构，它同样提高了代码的可重复使用性。 </span></span><br><span class="line"><span class="string"> </span></span><br><span class="line"><span class="string">不同的语言实现闭包的方式不同。Python以函数对象为基础，为闭包这一语法结构提供支持的 (我们在特殊方法与多范式中，已经多次看到Python使用对象来实现一些特殊的语法)。Python一切皆对象，函数这一语法结构也是一个对象。在函数对象中，我们像使用一个普通对象一样使用函数对象，比如更改函数对象的名字，或者将函数对象作为参数进行传递。 </span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span>  </span><br><span class="line">  </span><br><span class="line"><span class="comment">#函数对象的作用域  </span></span><br><span class="line">  </span><br><span class="line"><span class="comment">#和其他对象一样，函数对象也有其存活的范围，也就是函数对象的作用域。函数对象是使用def语句定义的，函数对象的作用域与def所在的层级相同。比如下面代码，我们在line_conf函数的隶属范围内定义的函数line，就只能在line_conf的隶属范围内调用。  </span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">line_conf</span>():  </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">line</span>(<span class="params">x</span>):  </span><br><span class="line">        <span class="keyword">return</span> <span class="number">2</span>*x+<span class="number">1</span>  </span><br><span class="line">    <span class="built_in">print</span>(line(<span class="number">5</span>))   <span class="comment"># within the scope  </span></span><br><span class="line">  </span><br><span class="line">line_conf()  </span><br><span class="line"><span class="comment">#print(line(5))       # out of the scope  </span></span><br><span class="line"><span class="comment">#line函数定义了一条直线(y = 2x + 1)。可以看到，在line_conf()中可以调用line函数，而在作用域之外调用line将会有下面的错误：  </span></span><br><span class="line"><span class="comment">#NameError: name &#x27;line&#x27; is not defined  </span></span><br><span class="line"><span class="comment">#说明这时已经在作用域之外。  </span></span><br><span class="line"><span class="comment">#同样，如果使用lambda定义函数，那么函数对象的作用域与lambda所在的层级相同。  </span></span><br><span class="line">  </span><br><span class="line"><span class="comment">#闭包  </span></span><br><span class="line"><span class="comment">#函数是一个对象，所以可以作为某个函数的返回结果。  </span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">line_conf</span>():  </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">line</span>(<span class="params">x</span>):  </span><br><span class="line">        <span class="keyword">return</span> <span class="number">2</span>*x+<span class="number">1</span>  </span><br><span class="line">    <span class="keyword">return</span> line       <span class="comment"># return a function object  </span></span><br><span class="line">  </span><br><span class="line">my_line = line_conf()  </span><br><span class="line"><span class="built_in">print</span>(my_line(<span class="number">5</span>))  </span><br><span class="line">  </span><br><span class="line"><span class="comment">#上面的代码可以成功运行。line_conf的返回结果被赋给line对象。上面的代码将打印11。  </span></span><br><span class="line"><span class="comment">#如果line()的定义中引用了外部的变量，会发生什么呢？  </span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">line_conf</span>():  </span><br><span class="line">    b = <span class="number">15</span>  </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">line</span>(<span class="params">x</span>):  </span><br><span class="line">        <span class="keyword">return</span> <span class="number">2</span>*x+b  </span><br><span class="line">    <span class="keyword">return</span> line       <span class="comment"># return a function object  </span></span><br><span class="line">  </span><br><span class="line">b = <span class="number">5</span>  </span><br><span class="line">my_line = line_conf()  </span><br><span class="line"><span class="built_in">print</span>(my_line(<span class="number">5</span>))    </span><br><span class="line">  </span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;&#x27;&#x27; </span></span><br><span class="line"><span class="string">我们可以看到，line定义的隶属程序块中引用了高层级的变量b，但b信息存在于line的定义之外 (b的定义并不在line的隶属程序块中)。我们称b为line的环境变量。事实上，line作为line_conf的返回值时，line中已经包括b的取值(尽管b并不隶属于line)。 </span></span><br><span class="line"><span class="string"> </span></span><br><span class="line"><span class="string">上面的代码将打印25，也就是说，line所参照的b值是函数对象定义时可供参考的b值，而不是使用时的b值。 </span></span><br><span class="line"><span class="string"> </span></span><br><span class="line"><span class="string">一个函数和它的环境变量合在一起，就构成了一个闭包(closure)。在Python中，所谓的闭包是一个包含有环境变量取值的函数对象。环境变量取值被保存在函数对象的__closure__属性中。比如下面的代码： </span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span>  </span><br><span class="line"><span class="keyword">def</span> <span class="title function_">line_conf</span>():  </span><br><span class="line">    b = <span class="number">15</span>  </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">line</span>(<span class="params">x</span>):  </span><br><span class="line">        <span class="keyword">return</span> <span class="number">2</span>*x+b  </span><br><span class="line">    <span class="keyword">return</span> line       <span class="comment"># return a function object  </span></span><br><span class="line">  </span><br><span class="line">b = <span class="number">5</span>  </span><br><span class="line">my_line = line_conf()  </span><br><span class="line"><span class="built_in">print</span>(my_line.__closure__)  </span><br><span class="line"><span class="built_in">print</span>(my_line.__closure__[<span class="number">0</span>].cell_contents)  </span><br><span class="line">  </span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;&#x27;&#x27; </span></span><br><span class="line"><span class="string">__closure__里包含了一个元组(tuple)。这个元组中的每个元素是cell类型的对象。我们看到第一个cell包含的就是整数15，也就是我们创建闭包时的环境变量b的取值。 </span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span>  </span><br><span class="line"><span class="keyword">def</span> <span class="title function_">line_conf</span>(<span class="params">a, b</span>):  </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">line</span>(<span class="params">x</span>):  </span><br><span class="line">        <span class="keyword">return</span> ax + b  </span><br><span class="line">    <span class="keyword">return</span> line  </span><br><span class="line">  </span><br><span class="line">line1 = line_conf(<span class="number">1</span>, <span class="number">1</span>)  </span><br><span class="line">line2 = line_conf(<span class="number">4</span>, <span class="number">5</span>)  </span><br><span class="line"><span class="built_in">print</span>(line1(<span class="number">5</span>), line2(<span class="number">5</span>))  </span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;&#x27;&#x27; </span></span><br><span class="line"><span class="string">这个例子中，函数line与环境变量a,b构成闭包。在创建闭包的时候，我们通过line_conf的参数a,b说明了这两个环境变量的取值，这样，我们就确定了函数的最终形式(y = x + 1和y = 4x + 5)。我们只需要变换参数a,b，就可以获得不同的直线表达函数。由此，我们可以看到，闭包也具有提高代码可复用性的作用。 </span></span><br><span class="line"><span class="string"> </span></span><br><span class="line"><span class="string">如果没有闭包，我们需要每次创建直线函数的时候同时说明a,b,x。这样，我们就需要更多的参数传递，也减少了代码的可移植性。利用闭包，我们实际上创建了泛函。line函数定义一种广泛意义的函数。这个函数的一些方面已经确定(必须是直线)，但另一些方面(比如a和b参数待定)。随后，我们根据line_conf传递来的参数，通过闭包的形式，将最终函数确定下来。 </span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span>  </span><br><span class="line"><span class="comment">#闭包与并行运算  </span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;&#x27;&#x27; </span></span><br><span class="line"><span class="string">闭包有效的减少了函数所需定义的参数数目。这对于并行运算来说有重要的意义。在并行运算的环境下，我们可以让每台电脑负责一个函数，然后将一台电脑的输出和下一台电脑的输入串联起来。最终，我们像流水线一样工作，从串联的电脑集群一端输入数据，从另一端输出数据。这样的情境最适合只有一个参数输入的函数。闭包就可以实现这一目的。 </span></span><br><span class="line"><span class="string"> </span></span><br><span class="line"><span class="string">并行运算正称为一个热点。这也是函数式编程又热起来的一个重要原因。函数式编程早在1950年代就已经存在，但应用并不广泛。然而，我们上面描述的流水线式的工作并行集群过程，正适合函数式编程。由于函数式编程这一天然优势，越来越多的语言也开始加入对函数式编程范式的支持。 </span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span>  </span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2016/09/23/%E7%94%A8Springmvc%20%20%E8%BF%94%E5%9B%9Ejson%E6%95%B0%E6%8D%AE%EF%BC%8C%E5%A1%AB%E5%85%85html%20%E6%88%96%20jsp%E9%A1%B5%E9%9D%A2%E3%80%82/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="周杰">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/09/23/%E7%94%A8Springmvc%20%20%E8%BF%94%E5%9B%9Ejson%E6%95%B0%E6%8D%AE%EF%BC%8C%E5%A1%AB%E5%85%85html%20%E6%88%96%20jsp%E9%A1%B5%E9%9D%A2%E3%80%82/" itemprop="url">用Springmvc  返回json数据，填充html 或 jsp页面。</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-09-23T13:40:44+08:00">
-                2016-09-23
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Spring/" itemprop="url" rel="index">
-                    <span itemprop="name">Spring</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <span id="more"></span>
-
-<p>maven pom.xml:</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">   <span class="comment">&lt;!-- net json --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>net.sf.json-lib<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>json-lib<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.4<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">classifier</span>&gt;</span>jdk15<span class="tag">&lt;/<span class="name">classifier</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>不会Maven的可以百度 net.sf.json 包。  其中注意， 指定 &lt;classifier&gt; 为jdk15   </p>
-<p>Controller:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(value=&quot;staff_value&quot;,produces=&quot;application/json&quot;)</span>  <span class="comment">//访问路径 和返回的json</span></span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="keyword">public</span> JSONObject <span class="title function_">staff_value</span><span class="params">()</span>&#123;</span><br><span class="line"></span><br><span class="line">   String staff_user=admin;</span><br><span class="line">  <span class="type">JSONObject</span> <span class="variable">jsono</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">JSONObject</span>();</span><br><span class="line">   jsono.put(<span class="string">&quot;username&quot;</span>,staff_user);</span><br><span class="line">  </span><br><span class="line">   <span class="type">JSONArray</span> <span class="variable">jsonArray</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">JSONArray</span>();</span><br><span class="line">   jsonArray.add(jsono);</span><br><span class="line">   </span><br><span class="line">   jsono.element(<span class="string">&quot;people&quot;</span>, jsonArray);</span><br><span class="line">   staff_user=<span class="literal">null</span>;</span><br><span class="line">  <span class="keyword">return</span> jsono;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>    java 代码已经完成。</p>
-<p> </p>
-<p>接着数据渲染模板采用Handlebars. 百度下载， 在webapp 加入Handlebars-v4.0.5.js. 我先写一个demo, 各位如果想详细了解这个渲染引擎</p>
-<p>可以参考其他的人的博客。  接着在你的视图加一个html页面， 或者jsp页面。 导入 Handlebars.js 的js文件。</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">&quot;text/javascript&quot;</span> <span class="attr">src</span>=<span class="string">&quot;/zd_web_/Handlebars/handlebars-v4.0.5.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span>  //写上你自己下载的Handlebars.js </span><br></pre></td></tr></table></figure>
-
-<p>要渲染的div:</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;list&quot;</span>&gt;</span>  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>定义渲染模板：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;script id=<span class="string">&quot;people-template&quot;</span> type=<span class="string">&quot;text/x-handlebars-template&quot;</span>&gt;  <span class="comment">//定义一个模板</span></span><br><span class="line">     &#123;&#123;#people&#125;&#125;</span><br><span class="line">       &lt;div <span class="keyword">class</span>=<span class="string">&quot;person&quot;</span>&gt;</span><br><span class="line">          <span class="language-xml"><span class="tag">&lt;<span class="name">a</span>&gt;</span>&#123;&#123;userName&#125;&#125;<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span></span><br><span class="line">       &lt;/div&gt;</span><br><span class="line">     &#123;&#123;/people&#125;&#125;</span><br><span class="line">   &lt;/script&gt;</span><br></pre></td></tr></table></figure>
-
-<p>people-template是你想渲染的模板， 在下面的的初始化脚本中， 我们用 Handlebars.compile 预编译这个模板，  people 和username 对应上面控制器的</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jsono.element(<span class="string">&quot;people&quot;</span>)</span><br></pre></td></tr></table></figure>
-
-<p>和</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jsono.put(<span class="string">&quot;username&quot;</span>,staff_user);</span><br></pre></td></tr></table></figure>
-
-<p> 初始化脚本：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&lt;script type=<span class="string">&quot;text/javascript&quot;</span>&gt;</span><br><span class="line">$(<span class="variable language_">document</span>).<span class="title function_">ready</span>(<span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">	<span class="keyword">var</span> template =<span class="title class_">Handlebars</span>.<span class="title function_">compile</span>($(<span class="string">&quot;#people-template&quot;</span>).<span class="title function_">html</span>());   <span class="comment">// 预编译模板</span></span><br><span class="line">	</span><br><span class="line">	$.<span class="title function_">ajax</span>(&#123;</span><br><span class="line">		 <span class="attr">url</span>:<span class="string">&#x27;http://localhost:8080/zd_web_/admin/welcome_admin&#x27;</span>,    <span class="comment">//你的Controller请求路径</span></span><br><span class="line">		 <span class="attr">dataType</span>:<span class="string">&#x27;json&#x27;</span>,</span><br><span class="line">		 <span class="attr">success</span>:<span class="keyword">function</span>(<span class="params">data</span>)&#123;   <span class="comment">//返回成功后的数据   ！注意返回的json数据格式是 &#123;r:[&#123;username:admin&#125;]&#125;   返回的是json对象 不是json字符串</span></span><br><span class="line">			</span><br><span class="line">			 $(<span class="string">&#x27;#list&#x27;</span>).<span class="title function_">html</span>(<span class="title function_">template</span>(data));</span><br><span class="line">		 &#125;</span><br><span class="line">	&#125;);</span><br><span class="line">&#125;) </span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-
-<p>   </p>
-<p>如上。 这样就完成了从Springmvc 返回 json 数据并且填充到html  或者jsp页面的demo.</p>
-
-          
+          python基础语法之闭包
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2016/10/18/python%20%E9%80%9A%E7%86%9F%E6%98%93%E6%87%82%E7%9A%84%E9%97%AD%E5%8C%85/">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1973,73 +1509,160 @@
 
       
         
+          JAVA内存模型
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2016/08/01/JAVA%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%20(JMM)%E5%92%8C%E5%90%8C%E6%AD%A5%E4%BB%A5%E5%8F%8A%E5%8F%AF%E8%A7%81%E6%80%A7/">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2016/07/20/java%E7%BA%BF%E7%A8%8B%E6%B1%A0(ThreadPoolExecutor)%E5%AE%9E%E4%BE%8B%E8%AE%B2%E8%A7%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="周杰">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/07/20/java%E7%BA%BF%E7%A8%8B%E6%B1%A0(ThreadPoolExecutor)%E5%AE%9E%E4%BE%8B%E8%AE%B2%E8%A7%A3/" itemprop="url">java线程池(ThreadPoolExecutor)实例讲解</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-07-20T18:35:55+08:00">
+                2016-07-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
           
-            <span id="more"></span>
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
 
-<p>可见性：</p>
-<p>   一般来说，我们对可见性的定义是一个线程对共享变量值的修改，能够被其他线程</p>
-<p>及时的看到，那么这个时候我们一般称这个变量是线程间可见的。</p>
-<p>那么什么是共享变量？</p>
-<p>      一般来讲，如果一个变量在多个线程的工作内存中都存在有副本，那么这个</p>
-<p>    变量就是这几个线程的共享变量。</p>
-<p> 那么啥是工作内存呢？ 这个时候就是我们的JMM登场了。</p>
-<p>Java内存模型（JMM）。描述了Java程序中各种线程共享变量的访问规则，以及在JVM中将变量存储到内存和从内存中读取出来变量这样的底层细节。</p>
-<p>在多核系统中，处理器一般有一层或多层的缓存，这些的缓存通过加速数据访问，和</p>
-<p>降低共享内存在总线上的通讯。来提高cpu性能。</p>
-<p>在处理器层面上，内存模型定义了一个充要条件，“让当前的处理器可以看到其他处理器写入到内存的数据”  以及 “其他处理器可以看到当前处理器写入到内存的数据”。</p>
-<p>有些处理器有很强的内存模型，能够让所有的处理器在任何时候任何指定的内存地址上都可以看到完全相同的值，而有的处理器内存模型较弱，在这种处理器中，必须需用内存屏障。来刷新本地处理器缓存并使本地处理器无效。目的是为了让当前处理器能够看到其他处理器的写操作或让其他处理器看到当前处理器的写操作。</p>
-<p>在JMM中所有的变量都存储在主内存中，且每个线程都有自己独立的工作内存，里面保存着该线程使用到的变量的副本。（其实就是主内存的一份拷贝）<br><img src="/../../images/img11.jpg" alt="Alt text"></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Class Reordering&#123;</span><br><span class="line">  <span class="type">int</span> x=<span class="number">0</span>, y=<span class="number">0</span>;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">writer</span><span class="params">()</span>&#123;</span><br><span class="line">   x=<span class="number">1</span>;</span><br><span class="line">   y=<span class="number">2</span>;</span><br><span class="line">  &#125; </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">reader</span><span class="params">()</span>&#123;</span><br><span class="line"> <span class="type">int</span> r1=y;</span><br><span class="line"> <span class="type">int</span>  r2=x;</span><br><span class="line">&#125;</span><br><span class="line"> &#125;</span><br><span class="line">如果在并发中执行这段代码， 读取Y变量将会得到<span class="number">2</span>这个值。 因为这个写入比写到X变量更晚一些。 但是如果重排序发生了， 那么就能发生对Y变量的写入操作，读取<span class="number">2</span>个变量</span><br><span class="line">的操作紧随其后，而且写入到x这个操作能发生程序的结果可能是r1=<span class="number">2</span> r2=<span class="number">0</span>;</span><br></pre></td></tr></table></figure>
-
-<p>当然不管编译器如果进行 重排序， 也要遵循as-if-serial语义。</p>
-<p>as-if-serial语义的意思是： 无论如何重排序，程序执行的结果应该与代码顺序执行的结果是一样的。 这点我们一般靠java编译器在单线程下做保证。 打个比喻：</p>
-<pre><code>  `int num1=1;  //1`
- 
-
- 
-
-  `int num2=2;  //2`
- 
-
- 
-
-  `int sum=num1+num2;//3`
- 
-</code></pre>
-<p> 在单线程的情况下， 第一 第2 他们的顺序是可以进行重排序的， 但是第三行是不行的.</p>
-<p> 所在在单线程的情况下， 我上面所讲的霹雳啪啦的一大堆理论等于放屁， 别急我们看下面。</p>
-<p>在多个线程访问下， as-if-serial是没有作用的， 按照一般情况，一个线程不会关注其他线程正在做什么。无论其他线程在计算还是在读写， 他都不太关心。 但是等他需要关心</p>
-<p>其他线程在做什么的时候， 就需要做一个事情了， 这个事情就是同步！~</p>
-<p>从java内存模型的角度讲，没有正确同步的含义是</p>
-<p>    1.一个线程中有一个对变量的写操作</p>
-<p>     2.另外一个线程对同一个变量有读操作</p>
-<p>     3. 而且写操作和读操作没有通过同步保证顺序</p>
-<p>当这些规则被违反的时候，我们就说在这个变量上有一个“数据竞争”(data race)。一个有数据竞争的程序就是一个没有正确同步的程序。</p>
-<p>java在语言层面支持可见性和同步的方式是通过：</p>
-<p>  synchronized， volatile. 来实现的。 其中volatile并不能实现可见性。</p>
-<p>我这里说的并没有包括jdk1.5以后加入的并发包。</p>
-<p>JMM对synchornized 有二条规定：</p>
-<p> 1.线程解锁前，必须把共享变量的最新值刷新到主内存中  </p>
-<p>  2.线程加锁时， 将清空工作内存中共享变量的值，从而使用共享变量时需要从</p>
-<p>    主内存中重新读取最新的值。</p>
-<p>所以在synchronized代码块退出的时候就保证了主内存是最新的值， 在加锁时就保证  </p>
-<p> 了加载的是最新的值。 现在大家应该知道synchronized 为啥能同步了吧。</p>
-<p>其实synchornized 可以保证可见性。 应该会有人很奇怪为啥sync锁 还能保证可见性。 下面我来说不可见的原因有哪些。</p>
-<p>在多线程环境下能够造成不可见的原因一般有三点：</p>
-<p> 1. 线程交叉执行。</p>
-<p> 2. 重排序结合线程交叉执行.</p>
-<p>3.共享变量没有及时更新</p>
-<p>首先synchronized 已经保证了线程交叉执行的正确性，  所以第一条没用。 而关于第二条</p>
-<p>嘿嘿嘿，我上面也写了 单线程情况下不管你怎么重排序都要保证结果一致性。 所以也废除。 第三…..  大家应该能猜得到。  </p>
-<p>大家是不是觉得stnchronized 很无敌很牛逼了？  其实他也是有缺点的， 不然不会有大名鼎鼎的java.util.concurrent并发包的出现。</p>
-<p>  我以我的理解说几点sync的坏处， 第一 synchronized粒度太粗， 而且该关键字没有提供当线程没获取到锁的情况下的超时逻辑， 而且。 我们应该知道， 一个只读变量他在多线程坏境下是安全的， 因为他并不会修改变量的值，所以捏。 sync锁应该给我们提供一个对互斥区域的并发读。 但是很遗憾他并没有。。。。</p>
-<p> volatile 这个关键字，他可以实现内存的可见性， 深入点来讲，其实他就是加入了内存</p>
-<p>  屏障和禁止重排序优化来实现的， 所以我上面所说的不完全都是废话….. 当我们</p>
-<p> 对volatile变量执行写操作的时候，会在写操作后加入一条store屏障指令，他会把cpu写缓存器的缓存强制写入的主内存中去。</p>
-<p>当对volatile变量执行读操作时，会在读操作前加入一条load屏障指令，他呢，也会强制cpu读到主内存中去。</p>
-<p> 其实在java内存模型中一共定义了8条操作指令。他们负责和工作内存打交道。具体的指令….. 我忘了…  大家可以查一下。太晚了，很多东西记不起。有空在更新一下。</p>
+                
+                
+              
+            </span>
+          
 
           
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          java 线程池
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2016/07/20/java%E7%BA%BF%E7%A8%8B%E6%B1%A0(ThreadPoolExecutor)%E5%AE%9E%E4%BE%8B%E8%AE%B2%E8%A7%A3/">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -2077,7 +1700,7 @@
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">&gt;</a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">&gt;</a>
   </nav>
 
 
@@ -2123,7 +1746,7 @@
               
                 <a href="/archives/%7C%7C%20archive">
               
-                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-count">20</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2134,7 +1757,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-count">6</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -2145,7 +1768,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-count">15</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
